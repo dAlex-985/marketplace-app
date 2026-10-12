@@ -1,3 +1,13 @@
+import AppError from "../utils/appError.js";
+
+const handleDuplicateFieldsDB = (err) => {
+  const field = Object.keys(err.keyValue).at(0);
+  const value = Object.values(err.keyValue).at(0);
+
+  const message = `Duplicate value for field '${field}': "${value}". Please use another value!`;
+  return new AppError(message, 401);
+};
+
 const sendErrorDev = (err, res) => {
   // in development mode we show the error object as it is with the status codes, messages etc. This makes the development more productive.
   res.status(err.statusCode).json({
@@ -34,7 +44,11 @@ const globalErrorHandler = (err, req, res, next) => {
   if (process.env.NODE_ENV === "development") {
     sendErrorDev(err, res);
   } else {
-    sendErrorProd(err, res);
+    let error = Object.assign(err);
+
+    if (error.code === 11000) error = handleDuplicateFieldsDB(error);
+
+    sendErrorProd(error, res);
   }
 };
 

@@ -1,6 +1,7 @@
 import express from "express";
 
 import AppError from "./utils/appError.js";
+import userRouter from "./routes/userRoutes.js";
 import globalErrorHandler from "./controllers/errorController.js";
 
 const app = express();
@@ -13,6 +14,8 @@ app.get("/api/v1/health", (req, res) => {
     message: "Marketplace API is healthy and running",
   });
 });
+
+app.use("/api/v1/users", userRouter);
 
 // this point is reached if none of the routes above were matched. matches every HTTP method and route.
 app.use((req, res, next) => {
