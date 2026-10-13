@@ -11,7 +11,7 @@
 - [x] `User` modell (`validator.isEmail`, `passwordConfirm` validáció, `pre('save')` bcrypt hashelés, `correctPassword` példánymetódus)
 - [x] Regisztráció (`POST /api/v1/users/signup`) Mass Assignment védelemmel és JWT token kiállítással (Postmanben tesztelve, 201)
 - [x] Adatbázis hibakezelés: MongoDB E11000 duplikált kulcs adapter (`handleDuplicateFieldsDB`)
-- [ ] Adatbázis hibakezelés: Mongoose validációs hiba adapter (`handleValidationErrorDB`)
+- [x] Adatbázis hibakezelés: Mongoose validációs hiba adapter (`handleValidationErrorDB`)
 - [ ] Bejelentkezés (`POST /api/v1/users/login`) megírása és tesztelése
 - [ ] Hitelesítő middleware (`protect`) és token-ellenőrzés
 - [ ] Szerepkör-alapú jogosultságkezelő middleware (`restrictTo`)
