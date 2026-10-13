@@ -12,8 +12,8 @@
 - [x] Regisztráció (`POST /api/v1/users/signup`) Mass Assignment védelemmel és JWT token kiállítással (Postmanben tesztelve, 201)
 - [x] Adatbázis hibakezelés: MongoDB E11000 duplikált kulcs adapter (`handleDuplicateFieldsDB`)
 - [x] Adatbázis hibakezelés: Mongoose validációs hiba adapter (`handleValidationErrorDB`)
-- [ ] Bejelentkezés (`POST /api/v1/users/login`) megírása és tesztelése
-- [ ] Hitelesítő middleware (`protect`) és token-ellenőrzés
+- [x] Bejelentkezés (`POST /api/v1/users/login`) megírása és tesztelése
+- [x] Hitelesítő middleware (`protect`) és token-ellenőrzés
 - [ ] Szerepkör-alapú jogosultságkezelő middleware (`restrictTo`)
 
 ## 3. További Vertikális Szeletek (Terv)
