@@ -5,11 +5,11 @@ const handleDuplicateFieldsDB = (err) => {
   const value = Object.values(err.keyValue).at(0);
 
   const message = `Duplicate value for field '${field}': "${value}". Please use another value!`;
-  return new AppError(message, 401);
+  return new AppError(message, 400);
 };
 
 const handleValidationErrorsDB = (err) => {
-  const errors = Object.values(err.erros).map((el) => el.message);
+  const errors = Object.values(err.errors).map((el) => el.message);
   const message = `Invalid input data. ${errors.join(". ")}`;
 
   return new AppError(message, 400);
