@@ -184,5 +184,3 @@ export const updatePassword = catchAsync(async (req, res, next) => {
     token,
   });
 });
-
-// eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhY2NhNWFkMzBiZGJlMmVjOGJiM2QzOCIsImlhdCI6MTc5MjM5Mzc3OCwiZXhwIjoxODAwMTY5Nzc4fQ.iZLIIJ2IzEPN7sxUnTriBRz3Adlb233prrQkmC-NJis
