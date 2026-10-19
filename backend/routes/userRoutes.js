@@ -6,6 +6,7 @@ import {
   resetPassword,
   restrictTo,
   signup,
+  updatePassword,
 } from "../controllers/authController.js";
 
 const router = express.Router();
@@ -17,6 +18,8 @@ router.post("/login", login);
 router.post("/forgotPassword", forgotPassword);
 
 router.patch("/resetPassword/:token", resetPassword);
+
+router.patch("/updatePassword", protect, updatePassword);
 
 router.delete("/deleteTest", protect, restrictTo("admin"), (req, res) => {
   res.status(200).json({

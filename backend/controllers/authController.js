@@ -157,3 +157,32 @@ export const resetPassword = catchAsync(async (req, res, next) => {
     token,
   });
 });
+
+export const updatePassword = catchAsync(async (req, res, next) => {
+  const user = await User.findById(req.user.id).select("+password");
+
+  if (!(await user.correctPassword(req.body.passwordCurrent, user.password))) {
+    return next(
+      new AppError(
+        "The password provided does not match the current password",
+        401,
+      ),
+    );
+  }
+
+  user.password = req.body.password;
+  user.passwordConfirm = req.body.passwordConfirm;
+
+  await user.save();
+
+  user.password = undefined;
+
+  const token = signToken(req.user._id);
+
+  res.status(200).json({
+    status: "success",
+    token,
+  });
+});
+
+// eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhY2NhNWFkMzBiZGJlMmVjOGJiM2QzOCIsImlhdCI6MTc5MjM5Mzc3OCwiZXhwIjoxODAwMTY5Nzc4fQ.iZLIIJ2IzEPN7sxUnTriBRz3Adlb233prrQkmC-NJis
