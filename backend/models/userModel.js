@@ -59,6 +59,12 @@ const userSchema = new mongoose.Schema({
   },
 });
 
+// QUERY MIDDLEWARE
+
+userSchema.pre(/^find/, function () {
+  this.find({ active: { $ne: false } });
+});
+
 // DOCUMENT MIDDLEWARE: password hashing before save:
 userSchema.pre("save", async function () {
   if (!this.isModified("password")) return;
@@ -69,9 +75,9 @@ userSchema.pre("save", async function () {
 });
 
 userSchema.pre("save", function () {
-  if (!this.isModified("password") || this.isNew) {
-    this.passwordChangedAt = Date.now() - 1000;
-  }
+  if (!this.isModified("password") || this.isNew) return;
+
+  this.passwordChangedAt = Date.now() - 1000;
 });
 
 userSchema.methods.correctPassword = async function (

@@ -9,7 +9,7 @@ import {
   updatePassword,
 } from "../controllers/authController.js";
 
-import { updateMe } from "../controllers/userController.js";
+import { deleteMe, updateMe } from "../controllers/userController.js";
 
 const router = express.Router();
 
@@ -24,6 +24,8 @@ router.patch("/resetPassword/:token", resetPassword);
 router.patch("/updatePassword", protect, updatePassword);
 
 router.patch("/updateMe", protect, updateMe);
+
+router.patch("/deleteMe", protect, deleteMe);
 
 router.delete("/deleteTest", protect, restrictTo("admin"), (req, res) => {
   res.status(200).json({
