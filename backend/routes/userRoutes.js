@@ -9,7 +9,13 @@ import {
   updatePassword,
 } from "../controllers/authController.js";
 
-import { deleteMe, updateMe } from "../controllers/userController.js";
+import {
+  deleteMe,
+  getAllUsers,
+  getUser,
+  updateMe,
+  updateUser,
+} from "../controllers/userController.js";
 
 const router = express.Router();
 
@@ -33,5 +39,11 @@ router.delete("/deleteTest", protect, restrictTo("admin"), (req, res) => {
     message: "Sikeresen bejutottál mint admin",
   });
 });
+
+router.get("/", protect, restrictTo("admin"), getAllUsers);
+
+router.get("/:id", protect, restrictTo("admin"), getUser);
+
+router.patch("/:id", protect, restrictTo("admin"), updateUser);
 
 export default router;
