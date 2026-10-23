@@ -11,7 +11,9 @@ import {
 
 import {
   deleteMe,
+  deleteUser,
   getAllUsers,
+  getMe,
   getUser,
   updateMe,
   updateUser,
@@ -32,6 +34,7 @@ router.patch("/updatePassword", protect, updatePassword);
 router.patch("/updateMe", protect, updateMe);
 
 router.patch("/deleteMe", protect, deleteMe);
+router.get("/me", protect, getMe, getUser);
 
 router.delete("/deleteTest", protect, restrictTo("admin"), (req, res) => {
   res.status(200).json({
@@ -45,5 +48,7 @@ router.get("/", protect, restrictTo("admin"), getAllUsers);
 router.get("/:id", protect, restrictTo("admin"), getUser);
 
 router.patch("/:id", protect, restrictTo("admin"), updateUser);
+
+router.delete("/:id", protect, restrictTo("admin"), deleteUser);
 
 export default router;
