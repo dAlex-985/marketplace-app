@@ -62,6 +62,11 @@ const userSchema = new mongoose.Schema({
 // QUERY MIDDLEWARE
 
 userSchema.pre(/^find/, function () {
+  // this a futó Query objektumra mutat
+  // this.find({ active: true });
+
+  // this.where("active").ne(false);
+
   this.find({ active: { $ne: false } });
 });
 

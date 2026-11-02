@@ -7,6 +7,8 @@ const DB = process.env.DB;
 
 const connectDB = async () => {
   try {
+    // mongoose.set("sanitizeFilter", true);
+
     await mongoose.connect(DB);
     console.log("MongoDB connection successful!");
 
