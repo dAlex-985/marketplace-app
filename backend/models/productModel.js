@@ -47,7 +47,7 @@ const productSchema = new mongoose.Schema(
         values: ["women", "men", "kids", "accessories", "other"],
         message: ["Category must be: women, men, kids, accessories, or other."],
       },
-      isLowercase: true,
+      lowercase: true,
     },
     images: {
       type: [String],

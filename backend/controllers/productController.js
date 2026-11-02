@@ -48,7 +48,14 @@ export const getProduct = catchAsync(async (req, res, next) => {
 export const updateProduct = catchAsync(async (req, res, next) => {
   const product = await Product.findById(req.params.id);
 
-  if (product.seller.toString() !== req.user.id) {
+  if (!product) {
+    return next(new AppError("Product with that ID was not found.", 404));
+  }
+
+  const isOwner = product.seller.toString() === req.user.id;
+  const isAdmin = req.user.role === "admin";
+
+  if (!isOwner && !isAdmin) {
     return next(
       new AppError("You do not have permission to edit this product.", 403),
     );
@@ -59,11 +66,11 @@ export const updateProduct = catchAsync(async (req, res, next) => {
   const updatedProduct = await Product.findByIdAndUpdate(
     req.params.id,
     req.body,
-    { runValidators: true, returnDocument: after },
+    { runValidators: true, returnDocument: "after" },
   );
 
   res.status(200).json({
-    status: "succcess",
+    status: "success",
     data: { product: updatedProduct },
   });
 });
@@ -71,7 +78,11 @@ export const updateProduct = catchAsync(async (req, res, next) => {
 export const deleteProduct = catchAsync(async (req, res, next) => {
   const product = await Product.findById(req.params.id);
 
-  const isOwner = product.seller.toString() === req.used.id;
+  if (!product) {
+    return next(new AppError("No product found with that ID", 404));
+  }
+
+  const isOwner = product.seller.toString() === req.user.id;
   const isAdmin = req.user.role === "admin";
 
   if (!isOwner && !isAdmin) {
