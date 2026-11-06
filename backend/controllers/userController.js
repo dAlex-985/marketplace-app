@@ -74,12 +74,24 @@ export const getUser = catchAsync(async (req, res, next) => {
 });
 
 export const updateUser = catchAsync(async (req, res, next) => {
+  if (req.body.password || req.body.passwordConfirm) {
+    return next(
+      new AppError(
+        "This route is not for password updates. Please use the password reset/update endpoints.",
+        400,
+      ),
+    );
+  }
   const updatedUser = await User.findByIdAndUpdate(req.params.id, req.body, {
     new: true,
     runValidators: true,
   });
 
-  res.status(201).json({
+  if (!updatedUser) {
+    return next(new AppError("No user found with that ID.", 404));
+  }
+
+  res.status(200).json({
     status: "success",
     data: {
       updatedUser,
@@ -88,9 +100,9 @@ export const updateUser = catchAsync(async (req, res, next) => {
 });
 
 export const deleteUser = catchAsync(async (req, res, next) => {
-  const user = await User.findByIdAndDelete(req.params.id);
+  const user = await User.deleteOne({ _id: req.params.id });
 
-  if (!user) {
+  if (user.deletedCount === 0) {
     return next(new AppError("No user found with that ID", 404));
   }
 

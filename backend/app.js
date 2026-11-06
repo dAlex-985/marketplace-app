@@ -5,6 +5,7 @@ import helmet from "helmet";
 import AppError from "./utils/appError.js";
 import userRouter from "./routes/userRoutes.js";
 import productRouter from "./routes/productRoutes.js";
+import orderRouter from "./routes/orderRoutes.js";
 import globalErrorHandler from "./controllers/errorController.js";
 
 const limiter = rateLimit({
@@ -22,16 +23,11 @@ app.use("/api", limiter);
 
 app.use(express.json({ limit: "10kb" }));
 
-app.get("/api/v1/health", (req, res) => {
-  res.status(200).json({
-    status: "success",
-    message: "Marketplace API is healthy and running",
-  });
-});
-
 app.use("/api/v1/users", userRouter);
 
 app.use("/api/v1/products", productRouter);
+
+app.use("/api/v1/orders", orderRouter);
 
 // this point is reached if none of the routes above were matched. matches every HTTP method and route.
 app.use((req, res, next) => {

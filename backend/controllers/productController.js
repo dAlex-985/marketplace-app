@@ -91,10 +91,31 @@ export const deleteProduct = catchAsync(async (req, res, next) => {
     );
   }
 
+  if (product.status !== "available") {
+    return next(
+      new AppError(
+        "You cannot delete a product that is currently reserved or already sold.",
+        400,
+      ),
+    );
+  }
+
   await Product.findByIdAndDelete(req.params.id);
 
   res.status(204).json({
     status: "success",
     data: null,
+  });
+});
+
+export const getMyProducts = catchAsync(async (req, res, next) => {
+  const products = await Product.find({ seller: req.user.id });
+
+  res.status(200).json({
+    status: "success",
+    results: products.length,
+    data: {
+      products,
+    },
   });
 });

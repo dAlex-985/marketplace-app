@@ -36,13 +36,6 @@ router.patch("/updateMe", protect, updateMe);
 router.patch("/deleteMe", protect, deleteMe);
 router.get("/me", protect, getMe, getUser);
 
-router.delete("/deleteTest", protect, restrictTo("admin"), (req, res) => {
-  res.status(200).json({
-    status: "success",
-    message: "Sikeresen bejutottál mint admin",
-  });
-});
-
 router.get("/", protect, restrictTo("admin"), getAllUsers);
 
 router.get("/:id", protect, restrictTo("admin"), getUser);
