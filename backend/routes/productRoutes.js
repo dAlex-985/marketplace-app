@@ -15,10 +15,10 @@ router.route("/").get(getAllProducts).post(protect, createProduct);
 
 router.route("/myProducts").get(protect, getMyProducts);
 
-router.route("/:id").get(getProduct);
-
-router.route("/:id").patch(protect, updateProduct);
-
-router.route("/:id").delete(protect, deleteProduct);
+router
+  .route("/:id")
+  .get(getProduct)
+  .patch(protect, updateProduct)
+  .delete(protect, deleteProduct);
 
 export default router;

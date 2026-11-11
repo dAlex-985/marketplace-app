@@ -1,6 +1,8 @@
 import express from "express";
 import rateLimit from "express-rate-limit";
 import helmet from "helmet";
+import cors from "cors";
+import morgan from "morgan";
 
 import AppError from "./utils/appError.js";
 import userRouter from "./routes/userRoutes.js";
@@ -10,13 +12,19 @@ import globalErrorHandler from "./controllers/errorController.js";
 
 const limiter = rateLimit({
   windowMs: 60 * 60 * 1000,
-  limit: 100,
+  limit: process.env.NODE_ENV === "development" ? 10000 : 100,
   message: "Too many requests from this IP, please try again in an hour!",
   standardHeaders: "draft-7",
   legacyHeaders: false,
 });
 
 const app = express();
+
+app.use(cors({ origin: "http://localhost:5173", credentials: true }));
+
+if (process.env.NODE_ENV === "development") {
+  app.use(morgan("dev"));
+}
 
 app.use(helmet());
 app.use("/api", limiter);

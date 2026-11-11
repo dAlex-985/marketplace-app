@@ -40,10 +40,15 @@ export const createOrder = catchAsync(async (req, res, next) => {
 });
 
 export const getMyOrders = catchAsync(async (req, res, next) => {
-  const orders = await Order.find({ buyer: req.user.id }).populate({
-    path: "product",
-    select: "title price images",
-  });
+  const orders = await Order.find({ buyer: req.user.id })
+    .populate({
+      path: "product",
+      select: "title price images",
+    })
+    .populate({
+      path: "seller",
+      select: "name avatar email",
+    });
 
   res.status(200).json({
     status: "success",
@@ -51,5 +56,23 @@ export const getMyOrders = catchAsync(async (req, res, next) => {
     data: {
       orders,
     },
+  });
+});
+
+export const getMySales = catchAsync(async (req, res, next) => {
+  const sales = await Order.find({ seller: req.user.id })
+    .populate({
+      path: "product",
+      select: "title images price",
+    })
+    .populate({
+      path: "buyer",
+      select: "name avatar email",
+    });
+
+  res.status(200).json({
+    status: "success",
+    results: sales.length,
+    data: { sales },
   });
 });

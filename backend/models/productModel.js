@@ -45,12 +45,13 @@ const productSchema = new mongoose.Schema(
       required: [true, "A product must have a category."],
       enum: {
         values: ["women", "men", "kids", "accessories", "other"],
-        message: ["Category must be: women, men, kids, accessories, or other."],
+        message: "Category must be: women, men, kids, accessories, or other.",
       },
       lowercase: true,
     },
     images: {
       type: [String],
+      required: [true, "A product must have at least one image."],
       validate: {
         validator: function (val) {
           return Array.isArray(val) && val.length >= 1 && val.length <= 4;

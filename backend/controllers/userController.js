@@ -24,10 +24,10 @@ export const updateMe = catchAsync(async (req, res, next) => {
     );
   }
 
-  const filteredBody = filterObj(req.body, "name", "email");
+  const filteredBody = filterObj(req.body, "name", "email", "phone");
 
   const updatedUser = await User.findByIdAndUpdate(req.user.id, filteredBody, {
-    new: true,
+    returnDocument: "after",
     runValidators: true,
   });
 
@@ -83,7 +83,7 @@ export const updateUser = catchAsync(async (req, res, next) => {
     );
   }
   const updatedUser = await User.findByIdAndUpdate(req.params.id, req.body, {
-    new: true,
+    returnDocument: "after",
     runValidators: true,
   });
 

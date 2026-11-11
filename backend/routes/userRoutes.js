@@ -21,27 +21,27 @@ import {
 
 const router = express.Router();
 
-router.post("/signup", signup);
+router.route("/signup").post(signup);
 
-router.post("/login", login);
+router.route("/login").post(login);
 
-router.post("/forgotPassword", forgotPassword);
+router.route("/forgotPassword").post(forgotPassword);
 
-router.patch("/resetPassword/:token", resetPassword);
+router.route("/resetPassword/:token").patch(resetPassword);
 
-router.patch("/updatePassword", protect, updatePassword);
+router.route("/updatePassword").patch(protect, updatePassword);
 
-router.patch("/updateMe", protect, updateMe);
+router.route("/updateMe").patch(protect, updateMe);
 
-router.patch("/deleteMe", protect, deleteMe);
-router.get("/me", protect, getMe, getUser);
+router.route("/deleteMe").patch(protect, deleteMe);
+router.route("/me").get(protect, getMe, getUser);
 
-router.get("/", protect, restrictTo("admin"), getAllUsers);
+router.route("/").get(protect, restrictTo("admin"), getAllUsers);
 
-router.get("/:id", protect, restrictTo("admin"), getUser);
-
-router.patch("/:id", protect, restrictTo("admin"), updateUser);
-
-router.delete("/:id", protect, restrictTo("admin"), deleteUser);
+router
+  .route("/:id")
+  .get(protect, restrictTo("admin"), getUser)
+  .patch(protect, restrictTo("admin"), updateUser)
+  .delete(protect, restrictTo("admin"), deleteUser);
 
 export default router;

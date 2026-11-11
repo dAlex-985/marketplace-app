@@ -14,6 +14,7 @@
   "type": "module",
   "dependencies": {
     "bcryptjs": "^3.0.3",
+    "cors": "^2.8.6",
     "dotenv": "^18.0.6",
     "express": "^5.2.1",
     "express-rate-limit": "^8.7.1",
@@ -21,5 +22,8 @@
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.11.1",
     "validator": "^13.15.35"
+  },
+  "devDependencies": {
+    "morgan": "^1.12.1"
   }
 }

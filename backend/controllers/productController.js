@@ -5,12 +5,12 @@ import catchAsync from "../utils/catchAsync.js";
 export const createProduct = catchAsync(async (req, res, next) => {
   req.body.seller = req.user.id;
 
-  const newProduct = await Product.create(req.body);
+  const product = await Product.create(req.body);
 
   res.status(201).json({
     status: "success",
     data: {
-      newProduct,
+      product,
     },
   });
 });
