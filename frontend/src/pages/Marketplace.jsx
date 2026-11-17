@@ -1,15 +1,7 @@
-import { useProducts } from "../features/products/useProducts";
+import ProductList from "../features/products/ProductList";
 
 function Marketplace() {
-  const { data, error, isError, isPending } = useProducts();
-
-  console.log(data);
-
-  return (
-    <div>
-      <h1>Marketplace</h1>
-    </div>
-  );
+  return <ProductList />;
 }
 
 export default Marketplace;
