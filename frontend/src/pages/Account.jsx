@@ -1,7 +1,9 @@
+import AccountDetails from "../features/users/AccountDetails";
+
 function Account() {
   return (
     <div>
-      <h1>Account</h1>
+      <AccountDetails />
     </div>
   );
 }

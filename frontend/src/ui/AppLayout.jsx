@@ -4,9 +4,9 @@ import Navbar from "./Navbar";
 
 function AppLayout() {
   return (
-    <div class="min-h-screen bg-stone-50 text-stone-800">
+    <div className="min-h-screen bg-stone-50 text-stone-800">
       <Navbar />
-      <main class="max-w-5xl mx-auto p-6">
+      <main className="max-w-6xl mx-auto p-6 h-full">
         <Outlet />
       </main>
     </div>
