@@ -10,6 +10,12 @@ import Account from "./pages/Account";
 import PageNotFound from "./pages/PageNotFound";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
+import AuthLayout from "./ui/AuthLayout";
+import AccountDetails from "./features/users/AccountDetails";
+
+import Products from "./features/users/Products";
+import Sales from "./features/users/Sales";
+import Purchases from "./features/users/Purchases";
 
 const queryClient = new QueryClient();
 
@@ -22,10 +28,18 @@ function App() {
             <Route path="/" element={<Marketplace />} />
             <Route path="/products/:id" element={<Product />} />
             <Route path="/products/new" element={<CreateProduct />} />
-            <Route path="/account" element={<Account />} />
+            <Route path="/account" element={<Account />}>
+              <Route index element={<AccountDetails />} />
+              <Route path="products" element={<Products />} />
+              <Route path="sales" element={<Sales />} />
+              <Route path="purchases" element={<Purchases />} />
+            </Route>
+
+            <Route path="*" element={<PageNotFound />} />
+          </Route>
+          <Route element={<AuthLayout />}>
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
-            <Route path="*" element={<PageNotFound />} />
           </Route>
         </Routes>
       </BrowserRouter>

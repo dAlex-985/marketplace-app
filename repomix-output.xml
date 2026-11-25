@@ -1,0 +1,3262 @@
+This file is a merged representation of the entire codebase, combined into a single document by Repomix.
+
+<file_summary>
+This section contains a summary of this file.
+
+<purpose>
+This file contains a packed representation of the entire repository's contents.
+It is designed to be easily consumable by AI systems for analysis, code review,
+or other automated processes.
+</purpose>
+
+<file_format>
+The content is organized as follows:
+1. This summary section
+2. Repository information
+3. Directory structure
+4. Repository files (if enabled)
+5. Multiple file entries, each consisting of:
+  - File path as an attribute
+  - Full contents of the file
+</file_format>
+
+<usage_guidelines>
+- This file should be treated as read-only. Any changes should be made to the
+  original repository files, not this packed version.
+- When processing this file, use the file path to distinguish
+  between different files in the repository.
+- Be aware that this file may contain sensitive information. Handle it with
+  the same level of security as you would the original repository.
+</usage_guidelines>
+
+<notes>
+- Some files may have been excluded based on .gitignore rules and Repomix's configuration
+- Binary files are not included in this packed representation. Please refer to the Repository Structure section for a complete list of file paths, including binary files
+- Files matching patterns in .gitignore are excluded
+- Files matching default ignore patterns are excluded
+- Files are sorted by Git change count (files with more changes are at the bottom)
+</notes>
+
+</file_summary>
+
+<directory_structure>
+backend/
+  controllers/
+    authController.js
+    errorController.js
+    orderController.js
+    productController.js
+    userController.js
+  models/
+    orderModel.js
+    productModel.js
+    userModel.js
+  routes/
+    orderRoutes.js
+    productRoutes.js
+    userRoutes.js
+  utils/
+    appError.js
+    catchAsync.js
+  app.js
+  package.json
+  seed.js
+  server.js
+frontend/
+  public/
+    favicon.svg
+    icons.svg
+    logo.png
+  src/
+    assets/
+      hero.png
+      react.svg
+      vite.svg
+    features/
+      authentication/
+        LoginForm.jsx
+        SignupForm.jsx
+        useLogin.js
+        useSignup.js
+      products/
+        ProductDetails.jsx
+        ProductItem.jsx
+        ProductList.jsx
+        useProduct.js
+        useProducts.js
+      users/
+        AccountDetails.jsx
+        Products.jsx
+        Purchases.jsx
+        Sales.jsx
+        useAccountDetails.js
+        useUpdatePassword.js
+        useUpdateUser.js
+    pages/
+      Account.jsx
+      CreateProduct.jsx
+      Login.jsx
+      Marketplace.jsx
+      MyOrders.jsx
+      MyProducts.jsx
+      MySales.jsx
+      PageNotFound.jsx
+      Product.jsx
+      Signup.jsx
+    services/
+      api.js
+      apiAuth.js
+      apiProducts.js
+      apiUser.js
+    ui/
+      AppLayout.jsx
+      AuthLayout.jsx
+      AuthNavbar.jsx
+      Button.jsx
+      CategoryFilter.jsx
+      Logo.jsx
+      Navbar.jsx
+      Searchbar.jsx
+    utils/
+      helpers.js
+    App.jsx
+    index.css
+    main.jsx
+  .gitignore
+  eslint.config.js
+  index.html
+  package.json
+  README.md
+  vite.config.js
+.gitignore
+PROGRESS.md
+</directory_structure>
+
+<files>
+This section contains the contents of the repository's files.
+
+<file path="frontend/src/features/users/Products.jsx">
+function Products() {
+  return <div>PRODUCTS</div>;
+}
+
+export default Products;
+</file>
+
+<file path="frontend/src/features/users/Purchases.jsx">
+function Purchases() {
+  return <div></div>;
+}
+
+export default Purchases;
+</file>
+
+<file path="frontend/src/features/users/Sales.jsx">
+function Sales() {
+  return <div>SALES</div>;
+}
+
+export default Sales;
+</file>
+
+<file path="frontend/src/features/users/useUpdatePassword.js">
+import { useMutation } from "@tanstack/react-query";
+import { updatePassword as updatePasswordApi } from "../../services/apiAuth";
+
+export function useUpdatePassword() {
+  const {
+    mutate: updatePassword,
+    isPending,
+    error,
+    isError,
+  } = useMutation({
+    mutationFn: updatePasswordApi,
+  });
+
+  return { updatePassword, isPending, isError, error };
+}
+</file>
+
+<file path="frontend/src/features/users/useUpdateUser.js">
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { updateMe as updateMeApi } from "../../services/apiUser";
+
+export function useUpdateUser() {
+  const queryClient = useQueryClient();
+
+  const {
+    mutate: updateUser,
+    isPending,
+    isError,
+    error,
+  } = useMutation({
+    mutationFn: updateMeApi,
+    onSuccess: (user) => {
+      queryClient.setQueryData(["user"], user);
+    },
+  });
+
+  return { updateUser, isPending, error, isError };
+}
+</file>
+
+<file path="frontend/src/ui/AuthLayout.jsx">
+import { Outlet } from "react-router";
+import AuthNavbar from "./AuthNavbar";
+
+function AuthLayout() {
+  return (
+    <div className="min-h-screen bg-stone-50 text-stone-800 flex flex-col">
+      <AuthNavbar />
+      <main className="flex flex-1 items-center justify-center px-4 py-12">
+        <Outlet />
+      </main>
+    </div>
+  );
+}
+
+export default AuthLayout;
+</file>
+
+<file path="frontend/src/ui/AuthNavbar.jsx">
+import { Link } from "react-router";
+import Logo from "./Logo";
+
+function AuthNavbar() {
+  return (
+    <header className="bg-white border-b border-stone-200">
+      <nav className="max-w-6xl mx-auto flex justify-between items-center px-6 py-4">
+        <Logo />
+        <Link
+          className="flex items-center gap-1.5 text-sm font-medium text-stone-500 hover:text-stone-900 transition-colors"
+          to="/"
+        >
+          <span aria-hidden="true">&larr;</span>
+          <span>Back to listings</span>
+        </Link>
+      </nav>
+    </header>
+  );
+}
+
+export default AuthNavbar;
+</file>
+
+<file path="backend/models/orderModel.js">
+import mongoose from "mongoose";
+
+const orderSchema = new mongoose.Schema(
+  {
+    product: {
+      type: mongoose.Schema.ObjectId,
+      ref: "Product",
+      required: [true, "An order must belong to a product."],
+    },
+    buyer: {
+      type: mongoose.Schema.ObjectId,
+      ref: "User",
+      required: [true, "An order must have a buyer."],
+    },
+    seller: {
+      type: mongoose.Schema.ObjectId,
+      ref: "User",
+      required: [true, "An order must have a seller."],
+    },
+    price: {
+      type: Number,
+      required: [true, "An order must have a price snapshot."],
+      min: [1, "Price must be at least 1."],
+    },
+    status: {
+      type: String,
+      enum: {
+        values: ["pending", "completed", "cancelled"],
+        message: "Status must be: pending, completed, or cancelled.",
+      },
+      default: "pending",
+    },
+    createdAt: {
+      type: Date,
+      default: Date.now,
+    },
+  },
+  {
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
+  },
+);
+
+orderSchema.index({ buyer: 1 });
+orderSchema.index({ seller: 1 });
+
+const Order = mongoose.model("Order", orderSchema);
+
+export default Order;
+</file>
+
+<file path="backend/utils/appError.js">
+class AppError extends Error {
+  constructor(message, statusCode) {
+    super(message);
+    this.statusCode = statusCode;
+    this.status = `${statusCode}`.startsWith("4") ? "fail" : "error";
+    this.isOperational = true;
+    Error.captureStackTrace(this, this.constructor);
+  }
+}
+
+export default AppError;
+</file>
+
+<file path="backend/seed.js">
+import mongoose from "mongoose";
+import dotenv from "dotenv";
+import User from "./models/userModel.js";
+import Product from "./models/productModel.js";
+import Order from "./models/orderModel.js";
+
+dotenv.config();
+
+const USERS = [
+  {
+    name: "Anna Kovács",
+    email: "anna@example.com",
+    phone: "+421 901 111 222",
+    password: "password123",
+    passwordConfirm: "password123",
+  },
+  {
+    name: "Márk Tóth",
+    email: "mark@example.com",
+    phone: "+421 902 333 444",
+    password: "password123",
+    passwordConfirm: "password123",
+  },
+  {
+    name: "Petra Nagy",
+    email: "petra@example.com",
+    phone: "+421 903 555 666",
+    password: "password123",
+    passwordConfirm: "password123",
+  },
+];
+
+async function seedDatabase() {
+  try {
+    await mongoose.connect(process.env.DB);
+    console.log("Connected to MongoDB...");
+
+    await Order.deleteMany();
+    await Product.deleteMany();
+    await User.deleteMany();
+
+    const createdUsers = await User.create(USERS);
+    const [anna, mark, petra] = createdUsers;
+
+    const products = [
+      {
+        title: "Classic Beige Cotton Trench Coat",
+        description:
+          "Timeless double-breasted trench coat in warm beige. Lightly worn, freshly cleaned, no stains or missing buttons.",
+        price: 45,
+        size: "M",
+        condition: "very_good",
+        category: "women",
+        images: ["/images/beige-trench-coat.jpg"],
+        seller: anna._id,
+      },
+      {
+        title: "Chunky Sage Green Wool Sweater",
+        description:
+          "Soft knitted wool-blend pullover in muted sage green. Relaxed Scandinavian fit, ideal for autumn and winter.",
+        price: 32,
+        size: "S",
+        condition: "new_without_tags",
+        category: "women",
+        images: ["/images/emerald-knit-sweater.jpg"],
+        seller: petra._id,
+        status: "sold",
+      },
+      {
+        title: "Vintage Medium-Wash Denim Jacket",
+        description:
+          "Sturdy 100% cotton denim jacket with classic button closure and chest pockets. Nice natural fade.",
+        price: 38,
+        size: "L",
+        condition: "good",
+        category: "men",
+        images: ["/images/denim-jacket.jpg"],
+        seller: mark._id,
+      },
+      {
+        title: "Minimalist White Leather Sneakers",
+        description:
+          "Clean low-top white leather sneakers. Worn twice indoors, soles are practically untouched.",
+        price: 50,
+        size: "43",
+        condition: "new_without_tags",
+        category: "men",
+        images: ["/images/white-sneakers.jpg"],
+        seller: mark._id,
+      },
+      {
+        title: "Mustard Yellow Waterproof Raincoat",
+        description:
+          "Wind- and waterproof hooded kids raincoat with soft cotton lining. Keeps dry even in heavy rain.",
+        price: 24,
+        size: "4-5Y",
+        condition: "very_good",
+        category: "kids",
+        images: ["/images/kids-yellow-raincoat.jpg"],
+        seller: anna._id,
+      },
+      {
+        title: "Organic Cotton Striped Overalls",
+        description:
+          "Breathable beige-and-white striped dungarees with adjustable shoulder straps and snap buttons.",
+        price: 18,
+        size: "2-3Y",
+        condition: "new_with_tags",
+        category: "kids",
+        images: ["/images/kids-striped-overalls.jpg"],
+        seller: petra._id,
+      },
+      {
+        title: "Cognac Pebbled Leather Crossbody Bag",
+        description:
+          "Compact everyday shoulder bag made from genuine pebbled leather with adjustable strap and brass hardware.",
+        price: 55,
+        size: "One Size",
+        condition: "very_good",
+        category: "accessories",
+        images: ["/images/leather-crossbody-bag.jpg"],
+        seller: anna._id,
+      },
+      {
+        title: "Soft Oatmeal Merino Wool Scarf",
+        description:
+          "Lightweight yet warm 100% merino wool scarf in neutral oatmeal shade. Non-itchy and generously sized.",
+        price: 22,
+        size: "One Size",
+        condition: "new_without_tags",
+        category: "accessories",
+        images: ["/images/wool-scarf.jpg"],
+        seller: petra._id,
+      },
+      {
+        title: "Handmade Speckled Ceramic Coffee Mug",
+        description:
+          "Wheel-thrown stoneware mug with natural speckled glaze. Holds approx. 300 ml, dishwasher safe.",
+        price: 14,
+        size: "300 ml",
+        condition: "new_with_tags",
+        category: "other",
+        images: ["/images/ceramic-coffee-mug.jpg"],
+        seller: mark._id,
+        status: "sold",
+      },
+      {
+        title: "Minimalist Olive Canvas Daypack",
+        description:
+          "Durable waxed canvas backpack with padded 15-inch laptop sleeve and front zip pocket.",
+        price: 40,
+        size: "18L",
+        condition: "good",
+        category: "other",
+        images: ["/images/canvas-backpack.jpg"],
+        seller: anna._id,
+        status: "sold",
+      },
+    ];
+
+    const createdProducts = await Product.create(products);
+
+    const orders = [
+      {
+        product: createdProducts[1]._id,
+        buyer: anna._id,
+        seller: petra._id,
+        price: createdProducts[1].price,
+        status: "completed",
+      },
+      {
+        product: createdProducts[8]._id,
+        buyer: anna._id,
+        seller: mark._id,
+        price: createdProducts[8].price,
+        status: "pending",
+      },
+      {
+        product: createdProducts[9]._id,
+        buyer: mark._id,
+        seller: anna._id,
+        price: createdProducts[9].price,
+        status: "completed",
+      },
+    ];
+
+    await Order.create(orders);
+    console.log("Seed completed: 3 users, 10 products, and 3 orders created!");
+  } catch (err) {
+    console.error("Seed failed:", err);
+  } finally {
+    await mongoose.disconnect();
+  }
+}
+
+seedDatabase();
+</file>
+
+<file path="frontend/public/favicon.svg">
+<svg xmlns="http://www.w3.org/2000/svg" width="48" height="46" fill="none" viewBox="0 0 48 46"><path fill="#863bff" d="M25.946 44.938c-.664.845-2.021.375-2.021-.698V33.937a2.26 2.26 0 0 0-2.262-2.262H10.287c-.92 0-1.456-1.04-.92-1.788l7.48-10.471c1.07-1.497 0-3.578-1.842-3.578H1.237c-.92 0-1.456-1.04-.92-1.788L10.013.474c.214-.297.556-.474.92-.474h28.894c.92 0 1.456 1.04.92 1.788l-7.48 10.471c-1.07 1.498 0 3.579 1.842 3.579h11.377c.943 0 1.473 1.088.89 1.83L25.947 44.94z" style="fill:#863bff;fill:color(display-p3 .5252 .23 1);fill-opacity:1"/><mask id="a" width="48" height="46" x="0" y="0" maskUnits="userSpaceOnUse" style="mask-type:alpha"><path fill="#000" d="M25.842 44.938c-.664.844-2.021.375-2.021-.698V33.937a2.26 2.26 0 0 0-2.262-2.262H10.183c-.92 0-1.456-1.04-.92-1.788l7.48-10.471c1.07-1.498 0-3.579-1.842-3.579H1.133c-.92 0-1.456-1.04-.92-1.787L9.91.473c.214-.297.556-.474.92-.474h28.894c.92 0 1.456 1.04.92 1.788l-7.48 10.471c-1.07 1.498 0 3.578 1.842 3.578h11.377c.943 0 1.473 1.088.89 1.832L25.843 44.94z" style="fill:#000;fill-opacity:1"/></mask><g mask="url(#a)"><g filter="url(#b)"><ellipse cx="5.508" cy="14.704" fill="#ede6ff" rx="5.508" ry="14.704" style="fill:#ede6ff;fill:color(display-p3 .9275 .9033 1);fill-opacity:1" transform="matrix(.00324 1 1 -.00324 -4.47 31.516)"/></g><g filter="url(#c)"><ellipse cx="10.399" cy="29.851" fill="#ede6ff" rx="10.399" ry="29.851" style="fill:#ede6ff;fill:color(display-p3 .9275 .9033 1);fill-opacity:1" transform="matrix(.00324 1 1 -.00324 -39.328 7.883)"/></g><g filter="url(#d)"><ellipse cx="5.508" cy="30.487" fill="#7e14ff" rx="5.508" ry="30.487" style="fill:#7e14ff;fill:color(display-p3 .4922 .0767 1);fill-opacity:1" transform="rotate(89.814 -25.913 -14.639)scale(1 -1)"/></g><g filter="url(#e)"><ellipse cx="5.508" cy="30.599" fill="#7e14ff" rx="5.508" ry="30.599" style="fill:#7e14ff;fill:color(display-p3 .4922 .0767 1);fill-opacity:1" transform="rotate(89.814 -32.644 -3.334)scale(1 -1)"/></g><g filter="url(#f)"><ellipse cx="5.508" cy="30.599" fill="#7e14ff" rx="5.508" ry="30.599" style="fill:#7e14ff;fill:color(display-p3 .4922 .0767 1);fill-opacity:1" transform="matrix(.00324 1 1 -.00324 -34.34 30.47)"/></g><g filter="url(#g)"><ellipse cx="14.072" cy="22.078" fill="#ede6ff" rx="14.072" ry="22.078" style="fill:#ede6ff;fill:color(display-p3 .9275 .9033 1);fill-opacity:1" transform="rotate(93.35 24.506 48.493)scale(-1 1)"/></g><g filter="url(#h)"><ellipse cx="3.47" cy="21.501" fill="#7e14ff" rx="3.47" ry="21.501" style="fill:#7e14ff;fill:color(display-p3 .4922 .0767 1);fill-opacity:1" transform="rotate(89.009 28.708 47.59)scale(-1 1)"/></g><g filter="url(#i)"><ellipse cx="3.47" cy="21.501" fill="#7e14ff" rx="3.47" ry="21.501" style="fill:#7e14ff;fill:color(display-p3 .4922 .0767 1);fill-opacity:1" transform="rotate(89.009 28.708 47.59)scale(-1 1)"/></g><g filter="url(#j)"><ellipse cx=".387" cy="8.972" fill="#7e14ff" rx="4.407" ry="29.108" style="fill:#7e14ff;fill:color(display-p3 .4922 .0767 1);fill-opacity:1" transform="rotate(39.51 .387 8.972)"/></g><g filter="url(#k)"><ellipse cx="47.523" cy="-6.092" fill="#7e14ff" rx="4.407" ry="29.108" style="fill:#7e14ff;fill:color(display-p3 .4922 .0767 1);fill-opacity:1" transform="rotate(37.892 47.523 -6.092)"/></g><g filter="url(#l)"><ellipse cx="41.412" cy="6.333" fill="#47bfff" rx="5.971" ry="9.665" style="fill:#47bfff;fill:color(display-p3 .2799 .748 1);fill-opacity:1" transform="rotate(37.892 41.412 6.333)"/></g><g filter="url(#m)"><ellipse cx="-1.879" cy="38.332" fill="#7e14ff" rx="4.407" ry="29.108" style="fill:#7e14ff;fill:color(display-p3 .4922 .0767 1);fill-opacity:1" transform="rotate(37.892 -1.88 38.332)"/></g><g filter="url(#n)"><ellipse cx="-1.879" cy="38.332" fill="#7e14ff" rx="4.407" ry="29.108" style="fill:#7e14ff;fill:color(display-p3 .4922 .0767 1);fill-opacity:1" transform="rotate(37.892 -1.88 38.332)"/></g><g filter="url(#o)"><ellipse cx="35.651" cy="29.907" fill="#7e14ff" rx="4.407" ry="29.108" style="fill:#7e14ff;fill:color(display-p3 .4922 .0767 1);fill-opacity:1" transform="rotate(37.892 35.651 29.907)"/></g><g filter="url(#p)"><ellipse cx="38.418" cy="32.4" fill="#47bfff" rx="5.971" ry="15.297" style="fill:#47bfff;fill:color(display-p3 .2799 .748 1);fill-opacity:1" transform="rotate(37.892 38.418 32.4)"/></g></g><defs><filter id="b" width="60.045" height="41.654" x="-19.77" y="16.149" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17158" stdDeviation="7.659"/></filter><filter id="c" width="90.34" height="51.437" x="-54.613" y="-7.533" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17158" stdDeviation="7.659"/></filter><filter id="d" width="79.355" height="29.4" x="-49.64" y="2.03" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17158" stdDeviation="4.596"/></filter><filter id="e" width="79.579" height="29.4" x="-45.045" y="20.029" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17158" stdDeviation="4.596"/></filter><filter id="f" width="79.579" height="29.4" x="-43.513" y="21.178" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17158" stdDeviation="4.596"/></filter><filter id="g" width="74.749" height="58.852" x="15.756" y="-17.901" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17158" stdDeviation="7.659"/></filter><filter id="h" width="61.377" height="25.362" x="23.548" y="2.284" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17158" stdDeviation="4.596"/></filter><filter id="i" width="61.377" height="25.362" x="23.548" y="2.284" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17158" stdDeviation="4.596"/></filter><filter id="j" width="56.045" height="63.649" x="-27.636" y="-22.853" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17158" stdDeviation="4.596"/></filter><filter id="k" width="54.814" height="64.646" x="20.116" y="-38.415" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17158" stdDeviation="4.596"/></filter><filter id="l" width="33.541" height="35.313" x="24.641" y="-11.323" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17158" stdDeviation="4.596"/></filter><filter id="m" width="54.814" height="64.646" x="-29.286" y="6.009" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17158" stdDeviation="4.596"/></filter><filter id="n" width="54.814" height="64.646" x="-29.286" y="6.009" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17158" stdDeviation="4.596"/></filter><filter id="o" width="54.814" height="64.646" x="8.244" y="-2.416" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17158" stdDeviation="4.596"/></filter><filter id="p" width="39.409" height="43.623" x="18.713" y="10.588" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17158" stdDeviation="4.596"/></filter></defs></svg>
+</file>
+
+<file path="frontend/public/icons.svg">
+<svg xmlns="http://www.w3.org/2000/svg">
+  <symbol id="bluesky-icon" viewBox="0 0 16 17">
+    <g clip-path="url(#bluesky-clip)"><path fill="#08060d" d="M7.75 7.735c-.693-1.348-2.58-3.86-4.334-5.097-1.68-1.187-2.32-.981-2.74-.79C.188 2.065.1 2.812.1 3.251s.241 3.602.398 4.13c.52 1.744 2.367 2.333 4.07 2.145-2.495.37-4.71 1.278-1.805 4.512 3.196 3.309 4.38-.71 4.987-2.746.608 2.036 1.307 5.91 4.93 2.746 2.72-2.746.747-4.143-1.747-4.512 1.702.189 3.55-.4 4.07-2.145.156-.528.397-3.691.397-4.13s-.088-1.186-.575-1.406c-.42-.19-1.06-.395-2.741.79-1.755 1.24-3.64 3.752-4.334 5.099"/></g>
+    <defs><clipPath id="bluesky-clip"><path fill="#fff" d="M.1.85h15.3v15.3H.1z"/></clipPath></defs>
+  </symbol>
+  <symbol id="discord-icon" viewBox="0 0 20 19">
+    <path fill="#08060d" d="M16.224 3.768a14.5 14.5 0 0 0-3.67-1.153c-.158.286-.343.67-.47.976a13.5 13.5 0 0 0-4.067 0c-.128-.306-.317-.69-.476-.976A14.4 14.4 0 0 0 3.868 3.77C1.546 7.28.916 10.703 1.231 14.077a14.7 14.7 0 0 0 4.5 2.306q.545-.748.965-1.587a9.5 9.5 0 0 1-1.518-.74q.191-.14.372-.293c2.927 1.369 6.107 1.369 8.999 0q.183.152.372.294-.723.437-1.52.74.418.838.963 1.588a14.6 14.6 0 0 0 4.504-2.308c.37-3.911-.63-7.302-2.644-10.309m-9.13 8.234c-.878 0-1.599-.82-1.599-1.82 0-.998.705-1.82 1.6-1.82.894 0 1.614.82 1.599 1.82.001 1-.705 1.82-1.6 1.82m5.91 0c-.878 0-1.599-.82-1.599-1.82 0-.998.705-1.82 1.6-1.82.893 0 1.614.82 1.599 1.82 0 1-.706 1.82-1.6 1.82"/>
+  </symbol>
+  <symbol id="documentation-icon" viewBox="0 0 21 20">
+    <path fill="none" stroke="#aa3bff" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.35" d="m15.5 13.333 1.533 1.322c.645.555.967.833.967 1.178s-.322.623-.967 1.179L15.5 18.333m-3.333-5-1.534 1.322c-.644.555-.966.833-.966 1.178s.322.623.966 1.179l1.534 1.321"/>
+    <path fill="none" stroke="#aa3bff" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.35" d="M17.167 10.836v-4.32c0-1.41 0-2.117-.224-2.68-.359-.906-1.118-1.621-2.08-1.96-.599-.21-1.349-.21-2.848-.21-2.623 0-3.935 0-4.983.369-1.684.591-3.013 1.842-3.641 3.428C3 6.449 3 7.684 3 10.154v2.122c0 2.558 0 3.838.706 4.726q.306.383.713.671c.76.536 1.79.64 3.581.66"/>
+    <path fill="none" stroke="#aa3bff" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.35" d="M3 10a2.78 2.78 0 0 1 2.778-2.778c.555 0 1.209.097 1.748-.047.48-.129.854-.503.982-.982.145-.54.048-1.194.048-1.749a2.78 2.78 0 0 1 2.777-2.777"/>
+  </symbol>
+  <symbol id="github-icon" viewBox="0 0 19 19">
+    <path fill="#08060d" fill-rule="evenodd" d="M9.356 1.85C5.05 1.85 1.57 5.356 1.57 9.694a7.84 7.84 0 0 0 5.324 7.44c.387.079.528-.168.528-.376 0-.182-.013-.805-.013-1.454-2.165.467-2.616-.935-2.616-.935-.349-.91-.864-1.143-.864-1.143-.71-.48.051-.48.051-.48.787.051 1.2.805 1.2.805.695 1.194 1.817.857 2.268.649.064-.507.27-.857.49-1.052-1.728-.182-3.545-.857-3.545-3.87 0-.857.31-1.558.8-2.104-.078-.195-.349-1 .077-2.078 0 0 .657-.208 2.14.805a7.5 7.5 0 0 1 1.946-.26c.657 0 1.328.092 1.946.26 1.483-1.013 2.14-.805 2.14-.805.426 1.078.155 1.883.078 2.078.502.546.799 1.247.799 2.104 0 3.013-1.818 3.675-3.558 3.87.284.247.528.714.528 1.454 0 1.052-.012 1.896-.012 2.156 0 .208.142.455.528.377a7.84 7.84 0 0 0 5.324-7.441c.013-4.338-3.48-7.844-7.773-7.844" clip-rule="evenodd"/>
+  </symbol>
+  <symbol id="social-icon" viewBox="0 0 20 20">
+    <path fill="none" stroke="#aa3bff" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.35" d="M12.5 6.667a4.167 4.167 0 1 0-8.334 0 4.167 4.167 0 0 0 8.334 0"/>
+    <path fill="none" stroke="#aa3bff" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.35" d="M2.5 16.667a5.833 5.833 0 0 1 8.75-5.053m3.837.474.513 1.035c.07.144.257.282.414.309l.93.155c.596.1.736.536.307.965l-.723.73a.64.64 0 0 0-.152.531l.207.903c.164.715-.213.991-.84.618l-.872-.52a.63.63 0 0 0-.577 0l-.872.52c-.624.373-1.003.094-.84-.618l.207-.903a.64.64 0 0 0-.152-.532l-.723-.729c-.426-.43-.289-.864.306-.964l.93-.156a.64.64 0 0 0 .412-.31l.513-1.034c.28-.562.735-.562 1.012 0"/>
+  </symbol>
+  <symbol id="x-icon" viewBox="0 0 19 19">
+    <path fill="#08060d" fill-rule="evenodd" d="M1.893 1.98c.052.072 1.245 1.769 2.653 3.77l2.892 4.114c.183.261.333.48.333.486s-.068.089-.152.183l-.522.593-.765.867-3.597 4.087c-.375.426-.734.834-.798.905a1 1 0 0 0-.118.148c0 .01.236.017.664.017h.663l.729-.83c.4-.457.796-.906.879-.999a692 692 0 0 0 1.794-2.038c.034-.037.301-.34.594-.675l.551-.624.345-.392a7 7 0 0 1 .34-.374c.006 0 .93 1.306 2.052 2.903l2.084 2.965.045.063h2.275c1.87 0 2.273-.003 2.266-.021-.008-.02-1.098-1.572-3.894-5.547-2.013-2.862-2.28-3.246-2.273-3.266.008-.019.282-.332 2.085-2.38l2-2.274 1.567-1.782c.022-.028-.016-.03-.65-.03h-.674l-.3.342a871 871 0 0 1-1.782 2.025c-.067.075-.405.458-.75.852a100 100 0 0 1-.803.91c-.148.172-.299.344-.99 1.127-.304.343-.32.358-.345.327-.015-.019-.904-1.282-1.976-2.808L6.365 1.85H1.8zm1.782.91 8.078 11.294c.772 1.08 1.413 1.973 1.425 1.984.016.017.241.02 1.05.017l1.03-.004-2.694-3.766L7.796 5.75 5.722 2.852l-1.039-.004-1.039-.004z" clip-rule="evenodd"/>
+  </symbol>
+</svg>
+</file>
+
+<file path="frontend/src/assets/react.svg">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" class="iconify iconify--logos" width="35.93" height="32" preserveAspectRatio="xMidYMid meet" viewBox="0 0 256 228"><path fill="#00D8FF" d="M210.483 73.824a171.49 171.49 0 0 0-8.24-2.597c.465-1.9.893-3.777 1.273-5.621c6.238-30.281 2.16-54.676-11.769-62.708c-13.355-7.7-35.196.329-57.254 19.526a171.23 171.23 0 0 0-6.375 5.848a155.866 155.866 0 0 0-4.241-3.917C100.759 3.829 77.587-4.822 63.673 3.233C50.33 10.957 46.379 33.89 51.995 62.588a170.974 170.974 0 0 0 1.892 8.48c-3.28.932-6.445 1.924-9.474 2.98C17.309 83.498 0 98.307 0 113.668c0 15.865 18.582 31.778 46.812 41.427a145.52 145.52 0 0 0 6.921 2.165a167.467 167.467 0 0 0-2.01 9.138c-5.354 28.2-1.173 50.591 12.134 58.266c13.744 7.926 36.812-.22 59.273-19.855a145.567 145.567 0 0 0 5.342-4.923a168.064 168.064 0 0 0 6.92 6.314c21.758 18.722 43.246 26.282 56.54 18.586c13.731-7.949 18.194-32.003 12.4-61.268a145.016 145.016 0 0 0-1.535-6.842c1.62-.48 3.21-.974 4.76-1.488c29.348-9.723 48.443-25.443 48.443-41.52c0-15.417-17.868-30.326-45.517-39.844Zm-6.365 70.984c-1.4.463-2.836.91-4.3 1.345c-3.24-10.257-7.612-21.163-12.963-32.432c5.106-11 9.31-21.767 12.459-31.957c2.619.758 5.16 1.557 7.61 2.4c23.69 8.156 38.14 20.213 38.14 29.504c0 9.896-15.606 22.743-40.946 31.14Zm-10.514 20.834c2.562 12.94 2.927 24.64 1.23 33.787c-1.524 8.219-4.59 13.698-8.382 15.893c-8.067 4.67-25.32-1.4-43.927-17.412a156.726 156.726 0 0 1-6.437-5.87c7.214-7.889 14.423-17.06 21.459-27.246c12.376-1.098 24.068-2.894 34.671-5.345a134.17 134.17 0 0 1 1.386 6.193ZM87.276 214.515c-7.882 2.783-14.16 2.863-17.955.675c-8.075-4.657-11.432-22.636-6.853-46.752a156.923 156.923 0 0 1 1.869-8.499c10.486 2.32 22.093 3.988 34.498 4.994c7.084 9.967 14.501 19.128 21.976 27.15a134.668 134.668 0 0 1-4.877 4.492c-9.933 8.682-19.886 14.842-28.658 17.94ZM50.35 144.747c-12.483-4.267-22.792-9.812-29.858-15.863c-6.35-5.437-9.555-10.836-9.555-15.216c0-9.322 13.897-21.212 37.076-29.293c2.813-.98 5.757-1.905 8.812-2.773c3.204 10.42 7.406 21.315 12.477 32.332c-5.137 11.18-9.399 22.249-12.634 32.792a134.718 134.718 0 0 1-6.318-1.979Zm12.378-84.26c-4.811-24.587-1.616-43.134 6.425-47.789c8.564-4.958 27.502 2.111 47.463 19.835a144.318 144.318 0 0 1 3.841 3.545c-7.438 7.987-14.787 17.08-21.808 26.988c-12.04 1.116-23.565 2.908-34.161 5.309a160.342 160.342 0 0 1-1.76-7.887Zm110.427 27.268a347.8 347.8 0 0 0-7.785-12.803c8.168 1.033 15.994 2.404 23.343 4.08c-2.206 7.072-4.956 14.465-8.193 22.045a381.151 381.151 0 0 0-7.365-13.322Zm-45.032-43.861c5.044 5.465 10.096 11.566 15.065 18.186a322.04 322.04 0 0 0-30.257-.006c4.974-6.559 10.069-12.652 15.192-18.18ZM82.802 87.83a323.167 323.167 0 0 0-7.227 13.238c-3.184-7.553-5.909-14.98-8.134-22.152c7.304-1.634 15.093-2.97 23.209-3.984a321.524 321.524 0 0 0-7.848 12.897Zm8.081 65.352c-8.385-.936-16.291-2.203-23.593-3.793c2.26-7.3 5.045-14.885 8.298-22.6a321.187 321.187 0 0 0 7.257 13.246c2.594 4.48 5.28 8.868 8.038 13.147Zm37.542 31.03c-5.184-5.592-10.354-11.779-15.403-18.433c4.902.192 9.899.29 14.978.29c5.218 0 10.376-.117 15.453-.343c-4.985 6.774-10.018 12.97-15.028 18.486Zm52.198-57.817c3.422 7.8 6.306 15.345 8.596 22.52c-7.422 1.694-15.436 3.058-23.88 4.071a382.417 382.417 0 0 0 7.859-13.026a347.403 347.403 0 0 0 7.425-13.565Zm-16.898 8.101a358.557 358.557 0 0 1-12.281 19.815a329.4 329.4 0 0 1-23.444.823c-7.967 0-15.716-.248-23.178-.732a310.202 310.202 0 0 1-12.513-19.846h.001a307.41 307.41 0 0 1-10.923-20.627a310.278 310.278 0 0 1 10.89-20.637l-.001.001a307.318 307.318 0 0 1 12.413-19.761c7.613-.576 15.42-.876 23.31-.876H128c7.926 0 15.743.303 23.354.883a329.357 329.357 0 0 1 12.335 19.695a358.489 358.489 0 0 1 11.036 20.54a329.472 329.472 0 0 1-11 20.722Zm22.56-122.124c8.572 4.944 11.906 24.881 6.52 51.026c-.344 1.668-.73 3.367-1.15 5.09c-10.622-2.452-22.155-4.275-34.23-5.408c-7.034-10.017-14.323-19.124-21.64-27.008a160.789 160.789 0 0 1 5.888-5.4c18.9-16.447 36.564-22.941 44.612-18.3ZM128 90.808c12.625 0 22.86 10.235 22.86 22.86s-10.235 22.86-22.86 22.86s-22.86-10.235-22.86-22.86s10.235-22.86 22.86-22.86Z"></path></svg>
+</file>
+
+<file path="frontend/src/assets/vite.svg">
+<svg xmlns="http://www.w3.org/2000/svg" width="77" height="47" fill="none" aria-labelledby="vite-logo-title" viewBox="0 0 77 47"><title id="vite-logo-title">Vite</title><style>.parenthesis{fill:#000}@media (prefers-color-scheme:dark){.parenthesis{fill:#fff}}</style><path fill="#9135ff" d="M40.151 45.71c-.663.844-2.02.374-2.02-.699V34.708a2.26 2.26 0 0 0-2.262-2.262H24.493c-.92 0-1.457-1.04-.92-1.788l7.479-10.471c1.07-1.498 0-3.578-1.842-3.578H15.443c-.92 0-1.456-1.04-.92-1.788l9.696-13.576c.213-.297.556-.474.92-.474h28.894c.92 0 1.456 1.04.92 1.788l-7.48 10.472c-1.07 1.497 0 3.578 1.842 3.578h11.376c.944 0 1.474 1.087.89 1.83L40.153 45.712z"/><mask id="a" width="48" height="47" x="14" y="0" maskUnits="userSpaceOnUse" style="mask-type:alpha"><path fill="#000" d="M40.047 45.71c-.663.843-2.02.374-2.02-.699V34.708a2.26 2.26 0 0 0-2.262-2.262H24.389c-.92 0-1.457-1.04-.92-1.788l7.479-10.472c1.07-1.497 0-3.578-1.842-3.578H15.34c-.92 0-1.456-1.04-.92-1.788l9.696-13.575c.213-.297.556-.474.92-.474H53.93c.92 0 1.456 1.04.92 1.788L47.37 13.03c-1.07 1.498 0 3.578 1.842 3.578h11.376c.944 0 1.474 1.088.89 1.831L40.049 45.712z"/></mask><g mask="url(#a)"><g filter="url(#b)"><ellipse cx="5.508" cy="14.704" fill="#eee6ff" rx="5.508" ry="14.704" transform="rotate(269.814 20.96 11.29)scale(-1 1)"/></g><g filter="url(#c)"><ellipse cx="10.399" cy="29.851" fill="#eee6ff" rx="10.399" ry="29.851" transform="rotate(89.814 -16.902 -8.275)scale(1 -1)"/></g><g filter="url(#d)"><ellipse cx="5.508" cy="30.487" fill="#8900ff" rx="5.508" ry="30.487" transform="rotate(89.814 -19.197 -7.127)scale(1 -1)"/></g><g filter="url(#e)"><ellipse cx="5.508" cy="30.599" fill="#8900ff" rx="5.508" ry="30.599" transform="rotate(89.814 -25.928 4.177)scale(1 -1)"/></g><g filter="url(#f)"><ellipse cx="5.508" cy="30.599" fill="#8900ff" rx="5.508" ry="30.599" transform="rotate(89.814 -25.738 5.52)scale(1 -1)"/></g><g filter="url(#g)"><ellipse cx="14.072" cy="22.078" fill="#eee6ff" rx="14.072" ry="22.078" transform="rotate(93.35 31.245 55.578)scale(-1 1)"/></g><g filter="url(#h)"><ellipse cx="3.47" cy="21.501" fill="#8900ff" rx="3.47" ry="21.501" transform="rotate(89.009 35.419 55.202)scale(-1 1)"/></g><g filter="url(#i)"><ellipse cx="3.47" cy="21.501" fill="#8900ff" rx="3.47" ry="21.501" transform="rotate(89.009 35.419 55.202)scale(-1 1)"/></g><g filter="url(#j)"><ellipse cx="14.592" cy="9.743" fill="#8900ff" rx="4.407" ry="29.108" transform="rotate(39.51 14.592 9.743)"/></g><g filter="url(#k)"><ellipse cx="61.728" cy="-5.321" fill="#8900ff" rx="4.407" ry="29.108" transform="rotate(37.892 61.728 -5.32)"/></g><g filter="url(#l)"><ellipse cx="55.618" cy="7.104" fill="#00c2ff" rx="5.971" ry="9.665" transform="rotate(37.892 55.618 7.104)"/></g><g filter="url(#m)"><ellipse cx="12.326" cy="39.103" fill="#8900ff" rx="4.407" ry="29.108" transform="rotate(37.892 12.326 39.103)"/></g><g filter="url(#n)"><ellipse cx="12.326" cy="39.103" fill="#8900ff" rx="4.407" ry="29.108" transform="rotate(37.892 12.326 39.103)"/></g><g filter="url(#o)"><ellipse cx="49.857" cy="30.678" fill="#8900ff" rx="4.407" ry="29.108" transform="rotate(37.892 49.857 30.678)"/></g><g filter="url(#p)"><ellipse cx="52.623" cy="33.171" fill="#00c2ff" rx="5.971" ry="15.297" transform="rotate(37.892 52.623 33.17)"/></g></g><path d="M6.919 0c-9.198 13.166-9.252 33.575 0 46.789h6.215c-9.25-13.214-9.196-33.623 0-46.789zm62.424 0h-6.215c9.198 13.166 9.252 33.575 0 46.789h6.215c9.25-13.214 9.196-33.623 0-46.789" class="parenthesis"/><defs><filter id="b" width="60.045" height="41.654" x="-5.564" y="16.92" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17286" stdDeviation="7.659"/></filter><filter id="c" width="90.34" height="51.437" x="-40.407" y="-6.762" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17286" stdDeviation="7.659"/></filter><filter id="d" width="79.355" height="29.4" x="-35.435" y="2.801" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17286" stdDeviation="4.596"/></filter><filter id="e" width="79.579" height="29.4" x="-30.84" y="20.8" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17286" stdDeviation="4.596"/></filter><filter id="f" width="79.579" height="29.4" x="-29.307" y="21.949" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17286" stdDeviation="4.596"/></filter><filter id="g" width="74.749" height="58.852" x="29.961" y="-17.13" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17286" stdDeviation="7.659"/></filter><filter id="h" width="61.377" height="25.362" x="37.754" y="3.055" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17286" stdDeviation="4.596"/></filter><filter id="i" width="61.377" height="25.362" x="37.754" y="3.055" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17286" stdDeviation="4.596"/></filter><filter id="j" width="56.045" height="63.649" x="-13.43" y="-22.082" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17286" stdDeviation="4.596"/></filter><filter id="k" width="54.814" height="64.646" x="34.321" y="-37.644" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17286" stdDeviation="4.596"/></filter><filter id="l" width="33.541" height="35.313" x="38.847" y="-10.552" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17286" stdDeviation="4.596"/></filter><filter id="m" width="54.814" height="64.646" x="-15.081" y="6.78" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17286" stdDeviation="4.596"/></filter><filter id="n" width="54.814" height="64.646" x="-15.081" y="6.78" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17286" stdDeviation="4.596"/></filter><filter id="o" width="54.814" height="64.646" x="22.45" y="-1.645" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17286" stdDeviation="4.596"/></filter><filter id="p" width="39.409" height="43.623" x="32.919" y="11.36" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17286" stdDeviation="4.596"/></filter></defs></svg>
+</file>
+
+<file path="frontend/src/features/authentication/LoginForm.jsx">
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { Link } from "react-router";
+
+import { useLogin } from "./useLogin";
+
+function LoginForm() {
+  const [showPassword, setShowPassword] = useState(false);
+
+  const { login, isPending, error } = useLogin();
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
+
+  function onSubmit(data) {
+    login(data);
+  }
+
+  return (
+    <div className="p-8 w-full max-w-md bg-white border border-stone-200 rounded-2xl shadow-xs">
+      <div className="text-center mb-8">
+        <h1 className="text-2xl font-bold text-stone-900">Welcome back</h1>
+        <p className="text-sm text-stone-500 mt-1.5">
+          Log in to your GreenMarket account
+        </p>
+      </div>
+
+      {error && (
+        <div
+          role="alert"
+          className="mb-5 px-3.5 py-2.5 text-sm text-red-700 bg-red-50 border border-red-200 rounded-xl"
+        >
+          {error.response?.data?.message || "Invalid email or password"}
+        </div>
+      )}
+
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+        <div>
+          <label
+            className="block text-sm font-medium text-stone-700 mb-1.5"
+            htmlFor="email"
+          >
+            Email
+          </label>
+          <input
+            {...register("email", { required: "Email is required" })}
+            className="w-full px-3.5 py-2.5 text-sm bg-white border border-stone-300 rounded-xl text-stone-900 placeholder:text-stone-400 focus:outline-none focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600/15 transition-colors"
+            id="email"
+            type="email"
+            placeholder="anna@example.com"
+            disabled={isPending}
+          />
+          {errors.email && (
+            <p className="text-xs text-red-600 mt-1.5" role="alert">
+              {errors.email.message}
+            </p>
+          )}
+        </div>
+
+        <div>
+          <div className="flex justify-between items-center mb-1.5">
+            <label
+              className="text-sm font-medium text-stone-700"
+              htmlFor="password"
+            >
+              Password
+            </label>
+            <button
+              className="text-xs font-medium text-emerald-600 hover:text-emerald-700 transition-colors cursor-pointer"
+              type="button"
+            >
+              Forgot password?
+            </button>
+          </div>
+          <div className="relative">
+            <input
+              {...register("password", { required: "Password is required" })}
+              className="w-full pl-3.5 pr-10 py-2.5 text-sm bg-white border border-stone-300 rounded-xl text-stone-900 placeholder:text-stone-400 focus:outline-none focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600/15 transition-colors"
+              id="password"
+              type={showPassword ? "text" : "password"}
+              placeholder="••••••••"
+              disabled={isPending}
+            />
+
+            <button
+              className="absolute inset-y-0 right-0 flex items-center pr-3.5 text-stone-400 hover:text-stone-600 transition-colors cursor-pointer"
+              type="button"
+              aria-label={showPassword ? "Hide password" : "Show password"}
+              onClick={() => setShowPassword((cur) => !cur)}
+            >
+              {showPassword ? (
+                <svg
+                  className="w-4 h-4"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={1.8}
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M3.98 8.223A10.477 10.477 0 0 0 1.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.451 10.451 0 0 1 12 4.5c4.756 0 8.773 3.162 10.065 7.498a10.522 10.522 0 0 1-4.293 5.774M6.228 6.228 3 3m3.228 3.228 3.65 3.65m7.894 7.894L21 21m-3.228-3.228-3.65-3.65m0 0a3 3 0 1 0-4.243-4.243m4.242 4.242L9.88 9.88"
+                  />
+                </svg>
+              ) : (
+                <svg
+                  className="w-4 h-4"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={1.8}
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z"
+                  />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
+                  />
+                </svg>
+              )}
+            </button>
+          </div>
+          {errors.password && (
+            <p className="text-xs text-red-600 mt-1.5" role="alert">
+              {errors.password.message}
+            </p>
+          )}
+        </div>
+
+        <button
+          className="w-full py-2.5 px-4 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium rounded-xl shadow-xs transition-colors cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
+          type="submit"
+          disabled={isPending}
+        >
+          {isPending ? "Logging in..." : "Log in"}
+        </button>
+      </form>
+
+      <p className="text-center text-sm text-stone-500 mt-6">
+        Don&apos;t have an account?{" "}
+        <Link
+          className="font-medium text-emerald-600 hover:text-emerald-700 transition-colors"
+          to="/signup"
+        >
+          Create account
+        </Link>
+      </p>
+    </div>
+  );
+}
+
+export default LoginForm;
+</file>
+
+<file path="frontend/src/features/authentication/SignupForm.jsx">
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { Link } from "react-router";
+
+import { useSignup } from "./useSignup";
+
+function SignupForm() {
+  const [showPassword, setShowPassword] = useState(false);
+  const { isPending, signup, error } = useSignup();
+
+  const {
+    handleSubmit,
+    register,
+    getValues,
+    formState: { errors },
+  } = useForm();
+
+  function onSubmit(data) {
+    signup(data);
+  }
+
+  return (
+    <div className="p-8 w-full max-w-md bg-white border border-stone-200 rounded-2xl shadow-xs">
+      <div className="text-center mb-8">
+        <h1 className="text-2xl font-bold text-stone-900">Create an account</h1>
+        <p className="text-sm text-stone-500 mt-1.5">
+          Join GreenMarket to buy and sell pre-loved pieces
+        </p>
+      </div>
+
+      {error && (
+        <div
+          role="alert"
+          className="mb-5 px-3.5 py-2.5 text-sm text-red-700 bg-red-50 border border-red-200 rounded-xl"
+        >
+          {error.response?.data?.message ||
+            "Something went wrong. Please try again later."}
+        </div>
+      )}
+
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+        <div>
+          <label
+            className="block text-sm font-medium text-stone-700 mb-1.5"
+            htmlFor="name"
+          >
+            Full name
+          </label>
+          <input
+            disabled={isPending}
+            {...register("name", { required: "Please provide a name" })}
+            className="w-full px-3.5 py-2.5 text-sm bg-white border border-stone-300 rounded-xl text-stone-900 placeholder:text-stone-400 focus:outline-none focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600/15 transition-colors"
+            id="name"
+            type="text"
+            placeholder="Anna Lindqvist"
+          />
+          {errors.name && (
+            <p className="text-xs text-red-600 mt-1.5" role="alert">
+              {errors.name.message}
+            </p>
+          )}
+        </div>
+
+        <div>
+          <label
+            className="block text-sm font-medium text-stone-700 mb-1.5"
+            htmlFor="email"
+          >
+            Email
+          </label>
+          <input
+            disabled={isPending}
+            {...register("email", { required: "Provide a valid email" })}
+            className="w-full px-3.5 py-2.5 text-sm bg-white border border-stone-300 rounded-xl text-stone-900 placeholder:text-stone-400 focus:outline-none focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600/15 transition-colors"
+            id="email"
+            type="email"
+            placeholder="anna@example.com"
+          />
+          {errors.email && (
+            <p className="text-xs text-red-600 mt-1.5" role="alert">
+              {errors.email.message}
+            </p>
+          )}
+        </div>
+
+        <div>
+          <label
+            className="block text-sm font-medium text-stone-700 mb-1.5"
+            htmlFor="password"
+          >
+            Password
+          </label>
+          <div className="relative">
+            <input
+              disabled={isPending}
+              {...register("password", {
+                required: "This field is required",
+                minLength: { value: 8, message: "Use at least 8 characters" },
+              })}
+              className="w-full pl-3.5 pr-10 py-2.5 text-sm bg-white border border-stone-300 rounded-xl text-stone-900 placeholder:text-stone-400 focus:outline-none focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600/15 transition-colors"
+              id="password"
+              type={showPassword ? "text" : "password"}
+              placeholder="••••••••"
+            />
+            <button
+              className="absolute inset-y-0 right-0 flex items-center pr-3.5 text-stone-400 hover:text-stone-600 transition-colors cursor-pointer"
+              onClick={() => setShowPassword((cur) => !cur)}
+              type="button"
+              aria-label={showPassword ? "Hide password" : "Show password"}
+            >
+              {showPassword ? (
+                <svg
+                  className="w-4 h-4"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={1.8}
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M3.98 8.223A10.477 10.477 0 0 0 1.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.451 10.451 0 0 1 12 4.5c4.756 0 8.773 3.162 10.065 7.498a10.522 10.522 0 0 1-4.293 5.774M6.228 6.228 3 3m3.228 3.228 3.65 3.65m7.894 7.894L21 21m-3.228-3.228-3.65-3.65m0 0a3 3 0 1 0-4.243-4.243m4.242 4.242L9.88 9.88"
+                  />
+                </svg>
+              ) : (
+                <svg
+                  className="w-4 h-4"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={1.8}
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z"
+                  />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
+                  />
+                </svg>
+              )}
+            </button>
+          </div>
+          {errors.password && (
+            <p className="text-xs text-red-600 mt-1.5" role="alert">
+              {errors.password.message}
+            </p>
+          )}
+        </div>
+
+        <div>
+          <label
+            className="block text-sm font-medium text-stone-700 mb-1.5"
+            htmlFor="passwordConfirm"
+          >
+            Confirm password
+          </label>
+          <input
+            disabled={isPending}
+            {...register("passwordConfirm", {
+              required: "Please provide the password",
+              validate: (val) => {
+                return getValues().password === val || "Passwords don't match";
+              },
+            })}
+            className="w-full px-3.5 py-2.5 text-sm bg-white border border-stone-300 rounded-xl text-stone-900 placeholder:text-stone-400 focus:outline-none focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600/15 transition-colors"
+            type={showPassword ? "text" : "password"}
+            id="passwordConfirm"
+            placeholder="••••••••"
+          />
+          {errors.passwordConfirm && (
+            <p className="text-xs text-red-600 mt-1.5" role="alert">
+              {errors.passwordConfirm.message}
+            </p>
+          )}
+        </div>
+
+        <button
+          disabled={isPending}
+          className="w-full py-2.5 px-4 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium rounded-xl shadow-xs transition-colors cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
+          type="submit"
+        >
+          {isPending ? "Creating account..." : "Create account"}
+        </button>
+      </form>
+
+      <p className="text-center text-sm text-stone-500 mt-6">
+        Already have an account?{" "}
+        <Link
+          className="font-medium text-emerald-600 hover:text-emerald-700 transition-colors"
+          to="/login"
+        >
+          Log in
+        </Link>
+      </p>
+    </div>
+  );
+}
+
+export default SignupForm;
+</file>
+
+<file path="frontend/src/features/authentication/useLogin.js">
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { login as loginApi } from "../../services/apiAuth";
+import { useNavigate } from "react-router";
+
+export function useLogin() {
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+
+  const {
+    error,
+    data,
+    isPending,
+    isError,
+    mutate: login,
+  } = useMutation({
+    mutationFn: loginApi,
+    onSuccess: (user) => {
+      queryClient.setQueryData(["user"], user);
+      navigate("/");
+    },
+  });
+
+  return { error, data, isPending, isError, login };
+}
+</file>
+
+<file path="frontend/src/features/authentication/useSignup.js">
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { signup as signupApi } from "../../services/apiAuth";
+import { useNavigate } from "react-router";
+
+export function useSignup() {
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+
+  const {
+    error,
+    data,
+    isPending,
+    isError,
+    mutate: signup,
+  } = useMutation({
+    mutationFn: signupApi,
+    onSuccess: (user) => {
+      queryClient.setQueryData(["user"], user);
+      navigate("/");
+    },
+  });
+
+  return { error, data, isError, isPending, signup };
+}
+</file>
+
+<file path="frontend/src/features/products/ProductDetails.jsx">
+import { useParams } from "react-router";
+import { useProduct } from "./useProduct";
+import { Link } from "react-router";
+
+function ProductDetails() {
+  const params = useParams();
+
+  const { data, isPending, isError, error } = useProduct(params.id);
+
+  if (isPending) {
+    return <p>Loading...</p>;
+  }
+
+  if (isError) {
+    return <p>Error: {error.message}</p>;
+  }
+
+  return (
+    <div>
+      <h3>{data.title}</h3>
+      <p>{data.description}</p>
+      <p>{data.size}</p>
+      <p>Sold by {data.seller?.name}</p>
+      <Link to="/">Back to the catalog</Link>
+    </div>
+  );
+}
+
+export default ProductDetails;
+</file>
+
+<file path="frontend/src/features/products/useProduct.js">
+import { useQuery } from "@tanstack/react-query";
+import { getProduct } from "../../services/apiProducts";
+
+export function useProduct(id) {
+  const { data, error, isPending, isError } = useQuery({
+    queryKey: ["product", id],
+    queryFn: () => getProduct(id),
+  });
+
+  return { data, error, isPending, isError };
+}
+</file>
+
+<file path="frontend/src/features/products/useProducts.js">
+import { useQuery } from "@tanstack/react-query";
+import { getAllProducts } from "../../services/apiProducts";
+
+export function useProducts() {
+  const { isPending, isError, data, error } = useQuery({
+    queryKey: ["products"],
+    queryFn: getAllProducts,
+  });
+
+  return { isPending, isError, data, error };
+}
+</file>
+
+<file path="frontend/src/features/users/AccountDetails.jsx">
+import { useForm } from "react-hook-form";
+import { useAccountDetails } from "./useAccountDetails";
+import { useUpdateUser } from "./useUpdateUser";
+import { useState } from "react";
+import { useUpdatePassword } from "./useUpdatePassword";
+
+function AccountDetails() {
+  const { user } = useAccountDetails();
+  const { updateUser, isPending } = useUpdateUser();
+  const {
+    updatePassword,
+    error,
+    isPending: isUpdatingPassword,
+  } = useUpdatePassword();
+  const [showPassword, setShowPassword] = useState(false);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({ values: user });
+
+  const {
+    register: registerPassword,
+    handleSubmit: handleSubmitPassword,
+    formState: { errors: passwordErrors },
+    reset,
+    getValues: getValuesPassword,
+  } = useForm();
+
+  function handleUpdate({ name, email, phone }) {
+    updateUser({ name, email, phone });
+  }
+
+  function handleUpdatePassword(data) {
+    updatePassword(data, { onSuccess: () => reset() });
+  }
+
+  return (
+    <div className="flex flex-col gap-6">
+      <section className="bg-white border border-stone-200 rounded-2xl p-6 sm:p-8 shadow-xs">
+        <div>
+          <h2 className="text-xl font-bold text-stone-900">
+            Personal Information
+          </h2>
+          <p className="text-sm text-stone-500 mt-1">
+            Manage your profile details and contact information
+          </p>
+        </div>
+
+        <form
+          onSubmit={handleSubmit(handleUpdate)}
+          className="mt-6 flex flex-col gap-5"
+        >
+          <div>
+            <label
+              className="block text-sm font-medium text-stone-700 mb-1.5"
+              htmlFor="name"
+            >
+              Full name
+            </label>
+            <input
+              disabled={isPending}
+              {...register("name", { required: "Please provide a name" })}
+              className="w-full rounded-xl border border-stone-300 px-3.5 py-2.5 text-sm text-stone-900 focus:outline-none focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600/15 transition-colors"
+              id="name"
+              type="text"
+            />
+            {errors.name && (
+              <p className="text-xs text-red-600 mt-1.5" role="alert">
+                {errors.name.message}
+              </p>
+            )}
+          </div>
+          <div>
+            <label
+              className="block text-sm font-medium text-stone-700 mb-1.5"
+              htmlFor="email"
+            >
+              Email
+            </label>
+            <input
+              disabled={isPending}
+              {...register("email", { required: "Email is required" })}
+              className="focus:ring-2 focus:ring-emerald-600/15 w-full rounded-xl border border-stone-300 px-3.5 py-2.5 text-sm text-stone-900 focus:outline-none focus:border-emerald-600 transition-colors"
+              id="email"
+              type="email"
+            />
+            {errors.email && (
+              <p className="text-xs text-red-600 mt-1.5" role="alert">
+                {errors.email.message}
+              </p>
+            )}
+          </div>
+          <div className="flex flex-col sm:flex-row sm:items-end gap-4">
+            <div className="flex-1">
+              <label
+                className="block text-sm font-medium text-stone-700 mb-1.5"
+                htmlFor="phone"
+              >
+                Phone number
+              </label>
+              <input
+                disabled={isPending}
+                {...register("phone")}
+                className="focus:ring-2 focus:ring-emerald-600/15 w-full rounded-xl border border-stone-300 px-3.5 py-2.5 text-sm text-stone-900 focus:outline-none focus:border-emerald-600 transition-colors"
+                id="phone"
+                type="tel"
+                placeholder="+421 123 456 789"
+              />
+            </div>
+            <button
+              disabled={isPending}
+              className="bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium px-6 py-2.5 rounded-xl transition-colors cursor-pointer shrink-0 disabled:opacity-60 disabled:cursor-not-allowed"
+              type="submit"
+            >
+              {isPending ? "Saving..." : "Save changes"}
+            </button>
+          </div>
+        </form>
+      </section>
+
+      <section className="bg-white border border-stone-200 rounded-2xl p-6 sm:p-8 shadow-xs">
+        <div>
+          <h2 className="text-xl font-bold text-stone-900">Change Password</h2>
+          <p className="text-sm text-stone-500 mt-1">
+            Update your password to keep your account secure
+          </p>
+        </div>
+        <form
+          onSubmit={handleSubmitPassword(handleUpdatePassword)}
+          className="mt-6 flex flex-col gap-5"
+        >
+          <div>
+            <label
+              className="block text-sm font-medium text-stone-700 mb-1.5"
+              htmlFor="current-password"
+            >
+              Current password
+            </label>
+            <div className="relative">
+              <input
+                disabled={isUpdatingPassword}
+                {...registerPassword("passwordCurrent", {
+                  required: "This field is required",
+                  minLength: { value: 8, message: "Use at least 8 characters" },
+                })}
+                className="focus:ring-2 focus:ring-emerald-600/15 w-full rounded-xl border border-stone-300 pl-3.5 pr-10 py-2.5 text-sm text-stone-900 focus:outline-none focus:border-emerald-600 transition-colors"
+                id="current-password"
+                type={showPassword ? "text" : "password"}
+              />
+              <button
+                className="absolute inset-y-0 right-0 flex items-center pr-3.5 text-stone-400 hover:text-stone-600 transition-colors cursor-pointer"
+                type="button"
+                aria-label={showPassword ? "Hide password" : "Show password"}
+                onClick={() => setShowPassword((cur) => !cur)}
+              >
+                {showPassword ? (
+                  <svg
+                    className="w-4 h-4"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth={1.8}
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M3.98 8.223A10.477 10.477 0 0 0 1.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.451 10.451 0 0 1 12 4.5c4.756 0 8.773 3.162 10.065 7.498a10.522 10.522 0 0 1-4.293 5.774M6.228 6.228 3 3m3.228 3.228 3.65 3.65m7.894 7.894L21 21m-3.228-3.228-3.65-3.65m0 0a3 3 0 1 0-4.243-4.243m4.242 4.242L9.88 9.88"
+                    />
+                  </svg>
+                ) : (
+                  <svg
+                    className="w-4 h-4"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth={1.8}
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z"
+                    />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
+                    />
+                  </svg>
+                )}
+              </button>
+            </div>
+            {(passwordErrors.passwordCurrent || error?.response) && (
+              <p className="text-xs text-red-600 mt-1.5" role="alert">
+                {passwordErrors.passwordCurrent?.message ||
+                  error?.response?.data?.message}
+              </p>
+            )}
+          </div>
+          <div>
+            <label
+              className="block text-sm font-medium text-stone-700 mb-1.5"
+              htmlFor="new-password"
+            >
+              New password
+            </label>
+            <input
+              disabled={isUpdatingPassword}
+              {...registerPassword("password", {
+                required: "This field is required",
+                minLength: { value: 8, message: "Use at least 8 characters" },
+              })}
+              className="focus:ring-2 focus:ring-emerald-600/15 w-full rounded-xl border border-stone-300 px-3.5 py-2.5 text-sm text-stone-900 focus:outline-none focus:border-emerald-600 transition-colors"
+              id="new-password"
+              type={showPassword ? "text" : "password"}
+            />
+            {passwordErrors.password && (
+              <p className="text-xs text-red-600 mt-1.5" role="alert">
+                {passwordErrors.password.message}
+              </p>
+            )}
+          </div>
+          <div>
+            <label
+              className="block text-sm font-medium text-stone-700 mb-1.5"
+              htmlFor="confirm-password"
+            >
+              Confirm new password
+            </label>
+            <input
+              disabled={isUpdatingPassword}
+              type={showPassword ? "text" : "password"}
+              {...registerPassword("passwordConfirm", {
+                required: "This field is required",
+
+                validate: (val) => {
+                  return (
+                    getValuesPassword().password === val ||
+                    "The passwords don't match"
+                  );
+                },
+              })}
+              className="focus:ring-2 focus:ring-emerald-600/15 w-full rounded-xl border border-stone-300 px-3.5 py-2.5 text-sm text-stone-900 focus:outline-none focus:border-emerald-600 transition-colors"
+              id="confirm-password"
+            />
+            {passwordErrors.passwordConfirm && (
+              <p className="text-xs text-red-600 mt-1.5" role="alert">
+                {passwordErrors.passwordConfirm.message}
+              </p>
+            )}
+          </div>
+          <button
+            disabled={isUpdatingPassword}
+            type="submit"
+            className="bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium px-6 py-2.5 rounded-xl transition-colors cursor-pointer shrink-0 disabled:opacity-60 disabled:cursor-not-allowed place-self-end mt-2"
+          >
+            {isUpdatingPassword ? "Updating..." : "Update password"}
+          </button>
+        </form>
+      </section>
+    </div>
+  );
+}
+
+export default AccountDetails;
+</file>
+
+<file path="frontend/src/features/users/useAccountDetails.js">
+import { useQuery } from "@tanstack/react-query";
+import { getMyAccountDetails } from "../../services/apiUser";
+
+export function useAccountDetails() {
+  const {
+    error,
+    data: user,
+    isPending,
+    isError,
+  } = useQuery({
+    queryFn: getMyAccountDetails,
+    queryKey: ["user"],
+    retry: false,
+  });
+
+  return { error, user, isPending, isError };
+}
+</file>
+
+<file path="frontend/src/pages/CreateProduct.jsx">
+function CreateProduct() {
+  return (
+    <div>
+      <h1>Create Product</h1>
+    </div>
+  );
+}
+
+export default CreateProduct;
+</file>
+
+<file path="frontend/src/pages/MyOrders.jsx">
+function MyOrders() {
+  return (
+    <div>
+      <h1>My orders</h1>
+    </div>
+  );
+}
+
+export default MyOrders;
+</file>
+
+<file path="frontend/src/pages/MyProducts.jsx">
+function MyProducts() {
+  return (
+    <div>
+      <h1>My products</h1>
+    </div>
+  );
+}
+
+export default MyProducts;
+</file>
+
+<file path="frontend/src/pages/MySales.jsx">
+function MySales() {
+  return (
+    <div>
+      <h1>My sales</h1>
+    </div>
+  );
+}
+
+export default MySales;
+</file>
+
+<file path="frontend/src/pages/PageNotFound.jsx">
+function PageNotFound() {
+  return (
+    <div>
+      <h1>Page not found</h1>
+    </div>
+  );
+}
+
+export default PageNotFound;
+</file>
+
+<file path="frontend/src/pages/Product.jsx">
+import ProductDetails from "../features/products/ProductDetails";
+
+function Product() {
+  return <ProductDetails />;
+}
+
+export default Product;
+</file>
+
+<file path="frontend/src/services/apiAuth.js">
+import api from "./api";
+
+export async function signup({ name, email, password, passwordConfirm }) {
+  const response = await api.post("users/signup", {
+    name,
+    email,
+    password,
+    passwordConfirm,
+  });
+
+  localStorage.setItem("token", response.data.token);
+
+  return response.data.data.user;
+}
+
+export async function login({ email, password }) {
+  const response = await api.post("users/login", {
+    email,
+    password,
+  });
+
+  localStorage.setItem("token", response.data.token);
+
+  return response.data.data.user;
+}
+
+export async function updatePassword({
+  passwordCurrent,
+  password,
+  passwordConfirm,
+}) {
+  const response = await api.patch("users/updatePassword", {
+    passwordCurrent,
+    password,
+    passwordConfirm,
+  });
+
+  localStorage.setItem("token", response.data.token);
+
+  return null;
+}
+</file>
+
+<file path="frontend/src/services/apiUser.js">
+import api from "./api";
+
+export async function getMyAccountDetails() {
+  const response = await api.get("users/me");
+
+  return response.data.data.user;
+}
+
+export async function updateMe({ name, email, phone }) {
+  const response = await api.patch("users/updateMe", { name, email, phone });
+
+  return response.data.data.updatedUser;
+}
+</file>
+
+<file path="frontend/src/ui/Button.jsx">
+import { NavLink } from "react-router";
+
+function Button({
+  children,
+  to,
+  variant = "primary",
+  type = "button",
+  onClick,
+  disabled,
+  className = "",
+}) {
+  const baseStyles =
+    "inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed";
+
+  const variants = {
+    primary: "bg-emerald-600 text-white hover:bg-emerald-700",
+    secondary:
+      "bg-white text-stone-700 border border-stone-300 hover:bg-stone-50",
+  };
+
+  const styles = `${baseStyles} ${variants[variant]} ${className}`;
+
+  if (to) {
+    return (
+      <NavLink to={to} className={styles}>
+        {children}
+      </NavLink>
+    );
+  }
+
+  return (
+    <button
+      type={type}
+      onClick={onClick}
+      disabled={disabled}
+      className={styles}
+    >
+      {children}
+    </button>
+  );
+}
+
+export default Button;
+</file>
+
+<file path="frontend/src/ui/CategoryFilter.jsx">
+import { useSearchParams } from "react-router";
+
+const CATEGORIES = [
+  {
+    label: "All",
+    value: "all",
+  },
+  {
+    label: "Women",
+    value: "women",
+  },
+  {
+    label: "Men",
+    value: "men",
+  },
+  {
+    label: "Kids",
+    value: "kids",
+  },
+  {
+    label: "Accessories",
+    value: "accessories",
+  },
+  {
+    label: "Other",
+    value: "other",
+  },
+];
+
+function CategoryFilter() {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const currentCategory = searchParams.get("category") || "all";
+
+  function handleSelect(category) {
+    if (category === "all") {
+      searchParams.delete("category");
+    } else {
+      searchParams.set("category", category);
+    }
+    setSearchParams(searchParams);
+  }
+
+  return (
+    <div className="flex gap-2.5 justify-center mb-8">
+      {CATEGORIES.map((category) => {
+        const isActive = category.value === currentCategory;
+
+        return (
+          <button
+            onClick={() => handleSelect(category.value)}
+            key={category.value}
+            type="button"
+            className={`rounded-full px-4 py-1.5 text-sm font-medium cursor-pointer border transition-colors ${
+              isActive
+                ? "bg-emerald-600 text-white border-emerald-600"
+                : "border-stone-200 bg-white text-stone-600 hover:border-emerald-600 hover:text-emerald-600"
+            }`}
+          >
+            {category.label}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+export default CategoryFilter;
+</file>
+
+<file path="frontend/src/ui/Logo.jsx">
+import { Link } from "react-router";
+
+function Logo() {
+  return (
+    <Link to="/" className="inline-flex items-center">
+      <img
+        src="/logo.png"
+        alt="GreenMarket logo"
+        className="h-9 w-auto object-contain"
+      />
+    </Link>
+  );
+}
+
+export default Logo;
+</file>
+
+<file path="frontend/src/ui/Searchbar.jsx">
+import { Search } from "lucide-react";
+import { useState } from "react";
+import { useNavigate, useSearchParams } from "react-router";
+
+function Searchbar() {
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const [query, setQuery] = useState(searchParams.get("search") || "");
+
+  function handleSubmit(e) {
+    e.preventDefault();
+
+    if (!query.trim()) {
+      navigate("/");
+      return;
+    }
+
+    navigate(`/?search=${encodeURIComponent(query.trim())}`);
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="relative w-72">
+      <input
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+        className="placeholder:text-stone-400 text-sm text-stone-800 w-full border border-stone-200 rounded-full bg-stone-100 py-1.5 pl-4 pr-10 focus:outline-none focus:border-emerald-600 focus:bg-white transition-colors"
+        type="text"
+        placeholder="Search items..."
+      />
+      <Search className="w-4 h-4 absolute right-3.5 top-1/2 -translate-y-1/2 text-stone-400" />
+    </form>
+  );
+}
+
+export default Searchbar;
+</file>
+
+<file path="frontend/src/utils/helpers.js">
+export function formatCurrency(value) {
+  return new Intl.NumberFormat("en-IE", {
+    style: "currency",
+    currency: "EUR",
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 2,
+  }).format(value);
+}
+</file>
+
+<file path="frontend/.gitignore">
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+</file>
+
+<file path="frontend/eslint.config.js">
+import js from '@eslint/js'
+import globals from 'globals'
+import reactHooks from 'eslint-plugin-react-hooks'
+import reactRefresh from 'eslint-plugin-react-refresh'
+import { defineConfig, globalIgnores } from 'eslint/config'
+
+export default defineConfig([
+  globalIgnores(['dist']),
+  {
+    files: ['**/*.{js,jsx}'],
+    extends: [
+      js.configs.recommended,
+      reactHooks.configs.flat.recommended,
+      reactRefresh.configs.vite,
+    ],
+    languageOptions: {
+      globals: globals.browser,
+      parserOptions: { ecmaFeatures: { jsx: true } },
+    },
+  },
+])
+</file>
+
+<file path="frontend/README.md">
+# React + Vite
+
+This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+
+Currently, two official plugins are available:
+
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+
+## React Compiler
+
+The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+
+## Expanding the ESLint configuration
+
+If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+</file>
+
+<file path="backend/controllers/orderController.js">
+import Order from "../models/orderModel.js";
+import Product from "../models/productModel.js";
+import AppError from "../utils/appError.js";
+import catchAsync from "../utils/catchAsync.js";
+
+export const createOrder = catchAsync(async (req, res, next) => {
+  const { productId } = req.body;
+
+  const product = await Product.findById(productId);
+
+  if (!product) {
+    return next(new AppError("No product found with that Id", 404));
+  }
+
+  if (product.status !== "available") {
+    return next(new AppError("Product not available with that ID", 400));
+  }
+
+  if (product.seller.toString() === req.user.id) {
+    return next(new AppError("You cannot buy your own product.", 400));
+  }
+
+  const order = await Order.create({
+    product: product._id,
+    buyer: req.user.id,
+    seller: product.seller,
+    price: product.price,
+  });
+
+  product.status = "sold";
+
+  await product.save({ validateBeforeSave: false });
+
+  res.status(201).json({
+    status: "success",
+    data: {
+      order,
+    },
+  });
+});
+
+export const getMyOrders = catchAsync(async (req, res, next) => {
+  const orders = await Order.find({ buyer: req.user.id })
+    .populate({
+      path: "product",
+      select: "title price images",
+    })
+    .populate({
+      path: "seller",
+      select: "name avatar email",
+    });
+
+  res.status(200).json({
+    status: "success",
+    results: orders.length,
+    data: {
+      orders,
+    },
+  });
+});
+
+export const getMySales = catchAsync(async (req, res, next) => {
+  const sales = await Order.find({ seller: req.user.id })
+    .populate({
+      path: "product",
+      select: "title images price",
+    })
+    .populate({
+      path: "buyer",
+      select: "name avatar email",
+    });
+
+  res.status(200).json({
+    status: "success",
+    results: sales.length,
+    data: { sales },
+  });
+});
+</file>
+
+<file path="backend/routes/orderRoutes.js">
+import express from "express";
+import { protect } from "../controllers/authController.js";
+import {
+  createOrder,
+  getMyOrders,
+  getMySales,
+} from "../controllers/orderController.js";
+
+const router = express.Router();
+
+router.route("/").post(protect, createOrder);
+
+router.route("/myOrders").get(protect, getMyOrders);
+
+router.route("/mySales").get(protect, getMySales);
+
+export default router;
+</file>
+
+<file path="backend/utils/catchAsync.js">
+const catchAsync = (fn) => {
+  return (req, res, next) => {
+    fn(req, res, next).catch(next);
+  };
+};
+
+export default catchAsync;
+</file>
+
+<file path="frontend/src/features/products/ProductItem.jsx">
+import { formatCurrency } from "../../utils/helpers";
+
+const CONDITION_LABELS = {
+  new_with_tags: "New with tags",
+  new_without_tags: "New without tags",
+  very_good: "Very good",
+  good: "Good",
+  satisfactory: "Satisfactory",
+};
+
+const CATEGORY_LABELS = {
+  women: "Women",
+  men: "Men",
+  kids: "Kids",
+  accessories: "Accessories",
+  other: "Other",
+};
+
+function ProductItem({ product }) {
+  const formattedSize =
+    product.size.toLowerCase() === "one size"
+      ? "One Size"
+      : `Size ${product.size}`;
+
+  return (
+    <li className="bg-white border border-stone-200 rounded-xl overflow-hidden shadow-xs hover:shadow-md transition-all duration-200 cursor-pointer hover:border-stone-300 group">
+      <div className="relative">
+        <img
+          className="w-full aspect-4/5 object-cover bg-stone-100"
+          src={product.images?.[0]}
+          alt={product.title}
+        />
+        <button
+          className="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/90 flex items-center justify-center text-stone-600 hover:text-emerald-600 hover:bg-white shadow-xs transition-colors cursor-pointer"
+          type="button"
+          aria-label="Add to favorites"
+        >
+          <svg
+            className="w-4 h-4"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth={1.8}
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"
+            />
+          </svg>
+        </button>
+      </div>
+
+      <div className="p-4">
+        <div className="flex items-center justify-between gap-2">
+          <p className="text-lg font-bold text-stone-900">
+            {formatCurrency(product.price)}
+          </p>
+          <span className="bg-emerald-50 text-emerald-700 text-xs font-medium px-2.5 py-0.5 rounded-full">
+            {CONDITION_LABELS[product.condition] || product.condition}
+          </span>
+        </div>
+
+        <h3 className="text-sm font-medium text-stone-700 truncate mt-0.5 group-hover:text-emerald-700 transition-colors">
+          {product.title}
+        </h3>
+        <div className="flex items-center gap-1.5 text-xs text-stone-500 mt-2">
+          <span>{formattedSize}</span>
+          <span>•</span>
+          <span>{CATEGORY_LABELS[product.category] || product.category}</span>
+        </div>
+      </div>
+    </li>
+  );
+}
+
+export default ProductItem;
+</file>
+
+<file path="frontend/src/features/products/ProductList.jsx">
+import ProductItem from "./ProductItem";
+import { useProducts } from "./useProducts";
+
+function ProductList() {
+  const { data, error, isError, isPending } = useProducts();
+
+  if (isPending) {
+    return <p>Loading...</p>;
+  }
+
+  if (isError) {
+    return <p>Error: {error.message}</p>;
+  }
+
+  return (
+    <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+      {data.map((product) => (
+        <ProductItem key={product._id} product={product} />
+      ))}
+    </ul>
+  );
+}
+
+export default ProductList;
+</file>
+
+<file path="frontend/src/pages/Account.jsx">
+import { NavLink, Outlet } from "react-router";
+import { useAccountDetails } from "../features/users/useAccountDetails";
+
+function Account() {
+  const { user } = useAccountDetails();
+
+  const initials = user?.name
+    ? user.name
+        .split(" ")
+        .map((part) => part[0])
+        .join("")
+        .toUpperCase()
+        .slice(0, 2)
+    : "";
+
+  const baseLinkClass =
+    "block w-full px-3.5 py-2.5 rounded-xl text-sm transition-colors";
+
+  const linkClass = ({ isActive }) =>
+    isActive
+      ? `${baseLinkClass} font-semibold text-emerald-700 bg-emerald-50`
+      : `${baseLinkClass} font-medium text-stone-600 hover:bg-stone-100 hover:text-stone-900`;
+
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-[260px_1fr] gap-8 items-start">
+      <aside className="bg-white border border-stone-200 rounded-2xl p-6 shadow-xs">
+        <div className="flex flex-col items-center text-center pb-6 mb-6 border-b border-stone-100">
+          <div className="w-20 h-20 rounded-full bg-emerald-50 text-emerald-700 text-4xl font-bold flex items-center justify-center mb-3.5">
+            {initials}
+          </div>
+          <h2 className="text-lg font-bold text-stone-900">{user?.name}</h2>
+          <p className="text-sm text-stone-500 mt-0.5">{user?.email}</p>
+        </div>
+        <nav>
+          <ul className="flex flex-col gap-1.5">
+            <li>
+              <NavLink end className={linkClass} to="/account">
+                Profile &amp; Security
+              </NavLink>
+            </li>
+            <li>
+              <NavLink to="products" className={linkClass}>
+                My listings
+              </NavLink>
+            </li>
+            <li>
+              <NavLink to="purchases" className={linkClass}>
+                Purchases
+              </NavLink>
+            </li>
+            <li>
+              <NavLink to="sales" className={linkClass}>
+                Sales
+              </NavLink>
+            </li>
+          </ul>
+        </nav>
+      </aside>
+
+      <div>
+        <Outlet />
+      </div>
+    </div>
+  );
+}
+
+export default Account;
+</file>
+
+<file path="frontend/src/pages/Login.jsx">
+import LoginForm from "../features/authentication/LoginForm";
+
+function Login() {
+  return (
+    <div>
+      <LoginForm />
+    </div>
+  );
+}
+
+export default Login;
+</file>
+
+<file path="frontend/src/pages/Signup.jsx">
+import SignupForm from "../features/authentication/SignupForm";
+
+function Signup() {
+  return (
+    <div>
+      <SignupForm />
+    </div>
+  );
+}
+
+export default Signup;
+</file>
+
+<file path="frontend/src/services/api.js">
+import axios from "axios";
+
+const api = axios.create({
+  baseURL: "http://localhost:5000/api/v1/",
+  headers: { "Content-Type": "application/json" },
+});
+
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem("token");
+
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+
+  return config;
+});
+
+export default api;
+</file>
+
+<file path="frontend/src/services/apiProducts.js">
+import api from "./api";
+
+export async function getAllProducts() {
+  const response = await api.get("products");
+
+  return response.data.data.products;
+}
+
+export async function getProduct(id) {
+  const response = await api.get(`products/${id}`);
+
+  return response.data.data.product;
+}
+</file>
+
+<file path="frontend/src/ui/AppLayout.jsx">
+import { Outlet } from "react-router";
+
+import Navbar from "./Navbar";
+
+function AppLayout() {
+  return (
+    <div className="min-h-screen bg-stone-50 text-stone-800">
+      <Navbar />
+      <main className="max-w-6xl mx-auto p-6 h-full">
+        <Outlet />
+      </main>
+    </div>
+  );
+}
+
+export default AppLayout;
+</file>
+
+<file path="frontend/src/ui/Navbar.jsx">
+import { NavLink, useNavigate } from "react-router";
+import { useQueryClient } from "@tanstack/react-query";
+import { Plus } from "lucide-react";
+
+import { useAccountDetails } from "../features/users/useAccountDetails";
+
+import Button from "./Button";
+import Logo from "./Logo";
+import Searchbar from "./Searchbar";
+
+function Navbar() {
+  const { user, isError } = useAccountDetails();
+  const queryClient = useQueryClient();
+  const navigate = useNavigate();
+
+  const isAuthenticated = Boolean(user) && !isError;
+
+  function handleLogout() {
+    localStorage.removeItem("token");
+    queryClient.setQueryData(["user"], null);
+    navigate("/");
+  }
+
+  const navLinkClass = ({ isActive }) =>
+    isActive
+      ? "text-sm font-medium text-stone-900 border-b-2 border-emerald-600 pb-1"
+      : "text-sm font-medium text-stone-500 hover:text-stone-900 pb-1 transition-colors";
+
+  return (
+    <header className="bg-white border-b border-stone-200">
+      <nav className="max-w-6xl mx-auto flex justify-between items-center px-6 py-4">
+        <div className="flex items-center gap-8">
+          <Logo />
+          <Searchbar />
+        </div>
+
+        <ul className="flex gap-6 items-center">
+          <li>
+            <NavLink to="/" end className={navLinkClass}>
+              Listings
+            </NavLink>
+          </li>
+          {isAuthenticated ? (
+            <>
+              <li>
+                <NavLink to="/account" end className={navLinkClass}>
+                  My account
+                </NavLink>
+              </li>
+              <li>
+                <Button>
+                  <Plus className="w-4 h-4" />
+                  <span>Sell Item</span>
+                </Button>
+              </li>
+            </>
+          ) : (
+            <li>
+              <Button to="/signup">Create account</Button>
+            </li>
+          )}
+
+          <li>
+            {isAuthenticated ? (
+              <Button onClick={handleLogout} variant="secondary">
+                Logout
+              </Button>
+            ) : (
+              <Button to="/login" variant="secondary">
+                Login
+              </Button>
+            )}
+          </li>
+        </ul>
+      </nav>
+    </header>
+  );
+}
+
+export default Navbar;
+</file>
+
+<file path="frontend/src/App.jsx">
+import { BrowserRouter, Routes, Route } from "react-router";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+
+import Marketplace from "./pages/Marketplace";
+import AppLayout from "./ui/AppLayout";
+import Product from "./pages/Product";
+import CreateProduct from "./pages/CreateProduct";
+import Account from "./pages/Account";
+import PageNotFound from "./pages/PageNotFound";
+import Login from "./pages/Login";
+import Signup from "./pages/Signup";
+import AuthLayout from "./ui/AuthLayout";
+import AccountDetails from "./features/users/AccountDetails";
+
+import Products from "./features/users/Products";
+import Sales from "./features/users/Sales";
+import Purchases from "./features/users/Purchases";
+
+const queryClient = new QueryClient();
+
+function App() {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <BrowserRouter>
+        <Routes>
+          <Route element={<AppLayout />}>
+            <Route path="/" element={<Marketplace />} />
+            <Route path="/products/:id" element={<Product />} />
+            <Route path="/products/new" element={<CreateProduct />} />
+            <Route path="/account" element={<Account />}>
+              <Route index element={<AccountDetails />} />
+              <Route path="products" element={<Products />} />
+              <Route path="sales" element={<Sales />} />
+              <Route path="purchases" element={<Purchases />} />
+            </Route>
+
+            <Route path="*" element={<PageNotFound />} />
+          </Route>
+          <Route element={<AuthLayout />}>
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
+          </Route>
+        </Routes>
+      </BrowserRouter>
+      <ReactQueryDevtools initialIsOpen={false} />
+    </QueryClientProvider>
+  );
+}
+
+export default App;
+</file>
+
+<file path="frontend/src/index.css">
+@import "tailwindcss";
+@theme {
+  --font-sans: "Inter", sans-serif;
+}
+</file>
+
+<file path="frontend/src/main.jsx">
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
+import "./index.css";
+
+import App from "./App.jsx";
+
+createRoot(document.getElementById("root")).render(
+  <StrictMode>
+    <App />
+  </StrictMode>,
+);
+</file>
+
+<file path="frontend/index.html">
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <title>GreenMarket</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
+</file>
+
+<file path="frontend/vite.config.js">
+import react from "@vitejs/plugin-react";
+import { defineConfig } from "vite";
+import tailwindcss from "@tailwindcss/vite";
+
+// https://vite.dev/config/
+export default defineConfig({
+  plugins: [react(), tailwindcss()],
+});
+</file>
+
+<file path=".gitignore">
+node_modules/
+.env
+dist/
+frontend/public/images/
+</file>
+
+<file path="backend/models/productModel.js">
+import mongoose from "mongoose";
+
+const productSchema = new mongoose.Schema(
+  {
+    title: {
+      type: String,
+      required: [true, "A product must have a title"],
+      trim: true,
+      maxLength: [100, "A product title must have at most 100 characters."],
+      minLength: [3, "A product title must have at least 3 characters."],
+    },
+    description: {
+      type: String,
+      required: [true, "A product must have a description."],
+      trim: true,
+      maxLength: [1000, "A description must have at most 1000 characters."],
+    },
+    price: {
+      type: Number,
+      required: [true, "A product must have a price."],
+      min: [1, "Price must be at least 1."],
+    },
+    size: {
+      type: String,
+      required: [true, "A product must have a size."],
+      trim: true,
+    },
+    condition: {
+      type: String,
+      required: [true, "A product must have a condition specified."],
+      enum: {
+        values: [
+          "new_with_tags",
+          "new_without_tags",
+          "very_good",
+          "good",
+          "satisfactory",
+        ],
+        message:
+          "Condition must be: new_with_tags, new_without_tags, very_good, good, or satisfactory.",
+      },
+    },
+    category: {
+      type: String,
+      required: [true, "A product must have a category."],
+      enum: {
+        values: ["women", "men", "kids", "accessories", "other"],
+        message: "Category must be: women, men, kids, accessories, or other.",
+      },
+      lowercase: true,
+    },
+    images: {
+      type: [String],
+      required: [true, "A product must have at least one image."],
+      validate: {
+        validator: function (val) {
+          return Array.isArray(val) && val.length >= 1 && val.length <= 4;
+        },
+        message: "A product must have between 1 and 4 images.",
+      },
+    },
+    seller: {
+      type: mongoose.Schema.ObjectId,
+      ref: "User",
+      required: [true, "A product must belong to a seller."],
+    },
+
+    status: {
+      type: String,
+      enum: {
+        values: ["available", "reserved", "sold"],
+        message: "Status must be: available, reserved, or sold.",
+      },
+      default: "available",
+    },
+    createdAt: {
+      type: Date,
+      default: Date.now,
+      select: false,
+    },
+  },
+  {
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
+  },
+);
+
+productSchema.index({ price: 1, category: 1 });
+productSchema.index({ seller: 1 });
+
+const Product = mongoose.model("Product", productSchema);
+
+export default Product;
+</file>
+
+<file path="backend/server.js">
+import "dotenv/config";
+import mongoose from "mongoose";
+import app from "./app.js";
+
+const PORT = process.env.PORT;
+const DB = process.env.DB;
+
+const connectDB = async () => {
+  try {
+    // mongoose.set("sanitizeFilter", true);
+
+    await mongoose.connect(DB);
+    console.log("MongoDB connection successful!");
+
+    app.listen(PORT, () => {
+      console.log(`Server is running on port ${PORT}...`);
+    });
+  } catch (err) {
+    console.error("MongoDB connection error:", err.message);
+    process.exit(1);
+  }
+};
+
+connectDB();
+</file>
+
+<file path="frontend/src/pages/Marketplace.jsx">
+import ProductList from "../features/products/ProductList";
+import CategoryFilter from "../ui/CategoryFilter";
+
+function Marketplace() {
+  return (
+    <>
+      <CategoryFilter />
+      <ProductList />
+    </>
+  );
+}
+
+export default Marketplace;
+</file>
+
+<file path="frontend/package.json">
+{
+  "name": "marketplace-app",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "lint": "eslint .",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@tailwindcss/vite": "^4.3.5",
+    "@tanstack/react-query": "^5.107.1",
+    "@tanstack/react-query-devtools": "^5.107.1",
+    "axios": "^1.21.1",
+    "lucide-react": "^1.76.0",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "react-hook-form": "^7.92.0",
+    "react-router": "^8.5.1",
+    "tailwindcss": "^4.3.5"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^6.1.2",
+    "eslint": "^10.14.0",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "eslint-plugin-react-refresh": "^0.5.7",
+    "globals": "^17.13.0",
+    "vite": "^8.3.6"
+  }
+}
+</file>
+
+<file path="PROGRESS.md">
+# Marketplace MVP - Fejlesztési Állapot
+
+## 1. Infrastruktúra és Alapok
+
+- [x] Node.js (ESM, "type": "module") és Express 5 beállítása natív `--watch` móddal
+- [x] `server.js` és `app.js` szétválasztása, Fail-Fast MongoDB Atlas kapcsolat
+- [x] Központi hibakezelő csővezeték (`AppError`, `catchAsync`, `errorController.js` Dev/Prod szétválasztással, 404 elkapás)
+
+## 2. Vertikális Szelet: User & Auth (Aktuális)
+
+- [x] `User` modell (`validator.isEmail`, `passwordConfirm` validáció, `pre('save')` bcrypt hashelés, `correctPassword` példánymetódus)
+- [x] Regisztráció (`POST /api/v1/users/signup`) Mass Assignment védelemmel és JWT token kiállítással (Postmanben tesztelve, 201)
+- [x] Adatbázis hibakezelés: MongoDB E11000 duplikált kulcs adapter (`handleDuplicateFieldsDB`)
+- [x] Adatbázis hibakezelés: Mongoose validációs hiba adapter (`handleValidationErrorDB`)
+- [x] Bejelentkezés (`POST /api/v1/users/login`) megírása és tesztelése
+- [x] Hitelesítő middleware (`protect`) és token-ellenőrzés
+- [ ] Szerepkör-alapú jogosultságkezelő middleware (`restrictTo`)
+
+## 3. További Vertikális Szeletek (Terv)
+
+- [ ] Product entitás (Model -> Controller -> Router -> CRUD tesztek)
+- [ ] Order entitás
+- [ ] Review entitás
+</file>
+
+<file path="backend/controllers/errorController.js">
+import AppError from "../utils/appError.js";
+
+const handleDuplicateFieldsDB = (err) => {
+  const field = Object.keys(err.keyValue).at(0);
+  const value = Object.values(err.keyValue).at(0);
+
+  const message = `Duplicate value for field '${field}': "${value}". Please use another value!`;
+  return new AppError(message, 400);
+};
+
+const handleValidationErrorsDB = (err) => {
+  const errors = Object.values(err.errors).map((el) => el.message);
+  const message = `Invalid input data. ${errors.join(". ")}`;
+
+  return new AppError(message, 400);
+};
+
+const sendErrorDev = (err, res) => {
+  // in development mode we show the error object as it is with the status codes, messages etc. This makes the development more productive.
+  res.status(err.statusCode).json({
+    status: err.status,
+    error: err,
+    message: err.message,
+    stack: err.stack,
+  });
+};
+
+const sendErrorProd = (err, res) => {
+  // based on the .isOperational property we make sure that we created this error so it can be shown to the client.
+  if (err.isOperational) {
+    res.status(err.statusCode).json({
+      status: err.status,
+      message: err.message,
+    });
+  } else {
+    console.error("ERROR :", err);
+
+    res.status(500).json({
+      status: "error",
+      message: "Something went wrong!",
+    });
+  }
+};
+
+const globalErrorHandler = (err, req, res, next) => {
+  // the error object is either created by us, which means is operational, or is a programming bug.
+  err.statusCode = err.statusCode || 500;
+  err.status = err.status || "error";
+
+  // based on the environment we either send a detailed error response or a not so detailed one with status and message.
+  if (process.env.NODE_ENV === "development") {
+    sendErrorDev(err, res);
+  } else {
+    let error = Object.assign(err);
+
+    if (error.code === 11000) error = handleDuplicateFieldsDB(error);
+    if (error.name === "ValidationError")
+      error = handleValidationErrorsDB(error);
+
+    sendErrorProd(error, res);
+  }
+};
+
+export default globalErrorHandler;
+</file>
+
+<file path="backend/controllers/productController.js">
+import Product from "../models/productModel.js";
+import AppError from "../utils/appError.js";
+import catchAsync from "../utils/catchAsync.js";
+
+export const createProduct = catchAsync(async (req, res, next) => {
+  req.body.seller = req.user.id;
+
+  const product = await Product.create(req.body);
+
+  res.status(201).json({
+    status: "success",
+    data: {
+      product,
+    },
+  });
+});
+
+export const getAllProducts = catchAsync(async (req, res, next) => {
+  const products = await Product.find({ status: "available" });
+
+  res.status(200).json({
+    status: "success",
+    results: products.length,
+    data: {
+      products,
+    },
+  });
+});
+
+export const getProduct = catchAsync(async (req, res, next) => {
+  const product = await Product.findById(req.params.id).populate({
+    path: "seller",
+    select: "name avatar email",
+  });
+
+  if (!product) {
+    return next(new AppError("No product was found with that ID!", 404));
+  }
+
+  res.status(200).json({
+    status: "success",
+    data: {
+      product,
+    },
+  });
+});
+
+export const updateProduct = catchAsync(async (req, res, next) => {
+  const product = await Product.findById(req.params.id);
+
+  if (!product) {
+    return next(new AppError("Product with that ID was not found.", 404));
+  }
+
+  const isOwner = product.seller.toString() === req.user.id;
+  const isAdmin = req.user.role === "admin";
+
+  if (!isOwner && !isAdmin) {
+    return next(
+      new AppError("You do not have permission to edit this product.", 403),
+    );
+  }
+
+  delete req.body.seller;
+
+  const updatedProduct = await Product.findByIdAndUpdate(
+    req.params.id,
+    req.body,
+    { runValidators: true, returnDocument: "after" },
+  );
+
+  res.status(200).json({
+    status: "success",
+    data: { product: updatedProduct },
+  });
+});
+
+export const deleteProduct = catchAsync(async (req, res, next) => {
+  const product = await Product.findById(req.params.id);
+
+  if (!product) {
+    return next(new AppError("No product found with that ID", 404));
+  }
+
+  const isOwner = product.seller.toString() === req.user.id;
+  const isAdmin = req.user.role === "admin";
+
+  if (!isOwner && !isAdmin) {
+    return next(
+      new AppError("You do not have permission to delete this product.", 403),
+    );
+  }
+
+  if (product.status !== "available") {
+    return next(
+      new AppError(
+        "You cannot delete a product that is currently reserved or already sold.",
+        400,
+      ),
+    );
+  }
+
+  await Product.findByIdAndDelete(req.params.id);
+
+  res.status(204).json({
+    status: "success",
+    data: null,
+  });
+});
+
+export const getMyProducts = catchAsync(async (req, res, next) => {
+  const products = await Product.find({ seller: req.user.id });
+
+  res.status(200).json({
+    status: "success",
+    results: products.length,
+    data: {
+      products,
+    },
+  });
+});
+</file>
+
+<file path="backend/routes/productRoutes.js">
+import express from "express";
+import { protect } from "../controllers/authController.js";
+import {
+  createProduct,
+  deleteProduct,
+  getAllProducts,
+  getMyProducts,
+  getProduct,
+  updateProduct,
+} from "../controllers/productController.js";
+
+const router = express.Router();
+
+router.route("/").get(getAllProducts).post(protect, createProduct);
+
+router.route("/myProducts").get(protect, getMyProducts);
+
+router
+  .route("/:id")
+  .get(getProduct)
+  .patch(protect, updateProduct)
+  .delete(protect, deleteProduct);
+
+export default router;
+</file>
+
+<file path="backend/controllers/authController.js">
+import catchAsync from "../utils/catchAsync.js";
+import User from "../models/userModel.js";
+import jwt from "jsonwebtoken";
+import AppError from "../utils/appError.js";
+import { promisify } from "util";
+import crypto from "crypto";
+
+const signToken = (id) => {
+  return jwt.sign({ id }, process.env.JWT_SECRET, {
+    expiresIn: process.env.JWT_EXPIRES_IN,
+  });
+};
+
+export const signup = catchAsync(async (req, res, next) => {
+  const newUser = await User.create({
+    name: req.body.name,
+    email: req.body.email,
+    password: req.body.password,
+    passwordConfirm: req.body.passwordConfirm,
+  });
+
+  const token = signToken(newUser._id);
+
+  newUser.password = undefined;
+
+  res.status(201).json({
+    status: "success",
+    token,
+    data: {
+      user: newUser,
+    },
+  });
+});
+
+export const login = catchAsync(async (req, res, next) => {
+  const { email, password } = req.body;
+
+  if (!email || !password)
+    return next(new AppError("Please provide email and password!", 400));
+
+  const user = await User.findOne({ email }).select("+password");
+
+  if (!user || !(await user.correctPassword(password, user.password))) {
+    return next(new AppError("Incorrect email or password", 401));
+  }
+
+  const token = signToken(user._id);
+  user.password = undefined;
+
+  res.status(200).json({
+    status: "success",
+    token,
+    data: { user },
+  });
+});
+
+export const protect = catchAsync(async (req, res, next) => {
+  // ebben a változóban tároljuk majd a tokent
+  let token;
+
+  // első lépésben megnézzük, hogy létezik-e az authorization mező, és ha igen, hogy a Bearer stringgel kezdődik-e
+  if (
+    req.headers.authorization &&
+    req.headers.authorization.startsWith("Bearer")
+  ) {
+    // ha a két feltétel teljesül, akkor leválasztjuk a tokent és rátesszük a változóra
+    token = req.headers.authorization.split(" ")[1];
+  }
+
+  // ha nincs token akkor egyből elutasítjuk a kérést
+  if (!token) {
+    return next(
+      new AppError("You are not logged in! Please log in to get access.", 401),
+    );
+  }
+
+  // ha van token akkor azt a következő sorban hitelesítjük a szerveren tárolt titkos kulcs segítségével. ha nem járt le, nem volt piszkálva és a mi szerverünk volt kiállítva akkor megkapjuk azon felhasználó ID-jét, akihez tartozik, valamint, hogy mikor volt kiadva.
+  const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
+
+  // ez még nem elég hogy van érvényes token. meg kell róla bizonyosodni, hogy a felhasználó még engedélyzve van, azaz nem lett törölve az adatbázisból.
+  const currentUser = await User.findById(decoded.id);
+
+  if (!currentUser) {
+    return next(
+      new AppError("The user belonging to this token no longer exists.", 401),
+    );
+  }
+
+  // nagyon fontos, hogy ha a jelsző megváltozott a token kiadását követően, akkor a token amellyel a műveletet véghez akartuk vinni már érvénytelen.
+  if (currentUser.changedPasswordAfter(decoded.iat)) {
+    return next(
+      new AppError("User recently changed password! Please log in again.", 401),
+    );
+  }
+  req.user = currentUser;
+  next();
+});
+
+export const restrictTo = (...roles) => {
+  return (req, res, next) => {
+    if (!roles.includes(req.user.role)) {
+      return next(
+        new AppError("You do not have permission to perform this action", 403),
+      );
+    }
+    next();
+  };
+};
+
+export const forgotPassword = catchAsync(async (req, res, next) => {
+  const { email } = req.body;
+
+  const user = await User.findOne({ email });
+
+  if (!user) {
+    return next(new AppError("There is no user with email address.", 404));
+  }
+
+  const resetToken = user.createPasswordResetToken();
+  await user.save({ validateBeforeSave: false });
+
+  const resetUrl = `${req.protocol}://${req.get("host")}/api/v1/users/resetPassword/${resetToken}`;
+
+  res.status(200).json({
+    status: "success",
+    message: "Token sent to email!",
+    resetUrl,
+  });
+});
+
+export const resetPassword = catchAsync(async (req, res, next) => {
+  const hashedToken = crypto
+    .createHash("sha256")
+    .update(req.params.token)
+    .digest("hex");
+
+  const user = await User.findOne({
+    passwordResetToken: hashedToken,
+    passwordResetExpires: { $gt: Date.now() },
+  });
+
+  if (!user) {
+    return next(new AppError("Token is invalid or has expired", 400));
+  }
+
+  user.password = req.body.password;
+  user.passwordConfirm = req.body.passwordConfirm;
+  user.passwordResetToken = undefined;
+  user.passwordResetExpires = undefined;
+
+  await user.save();
+  const token = signToken(user._id);
+  user.password = undefined;
+
+  res.status(200).json({
+    status: "success",
+    token,
+  });
+});
+
+export const updatePassword = catchAsync(async (req, res, next) => {
+  const user = await User.findById(req.user.id).select("+password");
+
+  if (!(await user.correctPassword(req.body.passwordCurrent, user.password))) {
+    return next(
+      new AppError(
+        "The password provided does not match the current password",
+        401,
+      ),
+    );
+  }
+
+  user.password = req.body.password;
+  user.passwordConfirm = req.body.passwordConfirm;
+
+  await user.save();
+
+  user.password = undefined;
+
+  const token = signToken(req.user._id);
+
+  res.status(200).json({
+    status: "success",
+    token,
+  });
+});
+</file>
+
+<file path="backend/controllers/userController.js">
+import User from "../models/userModel.js";
+import AppError from "../utils/appError.js";
+import catchAsync from "../utils/catchAsync.js";
+
+const filterObj = (obj, ...allowedFields) => {
+  const newObj = {};
+
+  Object.keys(obj).forEach((el) => {
+    if (allowedFields.includes(el)) {
+      newObj[el] = obj[el];
+    }
+  });
+
+  return newObj;
+};
+
+export const updateMe = catchAsync(async (req, res, next) => {
+  if (req.body.password || req.body.passwordConfirm) {
+    return next(
+      new AppError(
+        "This route is not for password updates. Please use /updatePassword.",
+        400,
+      ),
+    );
+  }
+
+  const filteredBody = filterObj(req.body, "name", "email", "phone");
+
+  const updatedUser = await User.findByIdAndUpdate(req.user.id, filteredBody, {
+    returnDocument: "after",
+    runValidators: true,
+  });
+
+  res.status(200).json({
+    status: "success",
+    data: {
+      updatedUser,
+    },
+  });
+});
+
+export const deleteMe = catchAsync(async (req, res, next) => {
+  await User.findByIdAndUpdate(req.user.id, { active: false });
+
+  res.status(204).json({
+    status: "success",
+    data: null,
+  });
+});
+
+export const getAllUsers = catchAsync(async (req, res, next) => {
+  const users = await User.find();
+
+  res.status(200).json({
+    status: "success",
+    results: users.length,
+    data: {
+      users,
+    },
+  });
+});
+
+export const getUser = catchAsync(async (req, res, next) => {
+  const user = await User.findById(req.params.id);
+
+  if (!user) {
+    return next(new AppError("No user found with that ID", 404));
+  }
+
+  res.status(200).json({
+    status: "success",
+    data: { user },
+  });
+});
+
+export const updateUser = catchAsync(async (req, res, next) => {
+  if (req.body.password || req.body.passwordConfirm) {
+    return next(
+      new AppError(
+        "This route is not for password updates. Please use the password reset/update endpoints.",
+        400,
+      ),
+    );
+  }
+  const updatedUser = await User.findByIdAndUpdate(req.params.id, req.body, {
+    returnDocument: "after",
+    runValidators: true,
+  });
+
+  if (!updatedUser) {
+    return next(new AppError("No user found with that ID.", 404));
+  }
+
+  res.status(200).json({
+    status: "success",
+    data: {
+      updatedUser,
+    },
+  });
+});
+
+export const deleteUser = catchAsync(async (req, res, next) => {
+  const user = await User.deleteOne({ _id: req.params.id });
+
+  if (user.deletedCount === 0) {
+    return next(new AppError("No user found with that ID", 404));
+  }
+
+  res.status(204).json({
+    status: "success",
+    data: null,
+  });
+});
+
+export const getMe = (req, res, next) => {
+  req.params.id = req.user.id;
+  next();
+};
+</file>
+
+<file path="backend/models/userModel.js">
+import mongoose from "mongoose";
+import validator from "validator";
+import bcrypt from "bcryptjs";
+import crypto from "crypto";
+
+const userSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    required: [true, "Please provide your name!"],
+    trim: true,
+  },
+  email: {
+    type: String,
+    required: [true, "Please provide your email!"],
+    unique: true,
+    lowercase: true,
+    validate: [validator.isEmail, "Please provide a valid email!"],
+  },
+  avatar: {
+    type: String,
+    default: "default.jpg",
+  },
+  role: {
+    type: String,
+    enum: ["user", "admin"],
+    default: "user",
+  },
+  phone: {
+    type: String,
+    trim: true,
+  },
+  password: {
+    type: String,
+    required: [true, "Please provide a password!"],
+    minLength: [8, "Password must be at least 8 characters long!"],
+    select: false,
+  },
+  passwordConfirm: {
+    type: String,
+    required: [true, "Please confirm your password!"],
+    validate: {
+      validator: function (val) {
+        return val === this.password;
+      },
+      message: "Passwords do not match!",
+    },
+  },
+  passwordChangedAt: Date,
+  passwordResetToken: String,
+  passwordResetExpires: Date,
+  active: {
+    type: Boolean,
+    default: true,
+    select: false,
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
+});
+
+// QUERY MIDDLEWARE
+
+userSchema.pre(/^find/, function () {
+  // this a futó Query objektumra mutat
+  // this.find({ active: true });
+
+  // this.where("active").ne(false);
+
+  this.find({ active: { $ne: false } });
+});
+
+// DOCUMENT MIDDLEWARE: password hashing before save:
+userSchema.pre("save", async function () {
+  if (!this.isModified("password")) return;
+
+  this.password = await bcrypt.hash(this.password, 12);
+
+  this.passwordConfirm = undefined;
+});
+
+userSchema.pre("save", function () {
+  if (!this.isModified("password") || this.isNew) return;
+
+  this.passwordChangedAt = Date.now() - 1000;
+});
+
+userSchema.methods.correctPassword = async function (
+  candidatePassword,
+  userPassword,
+) {
+  return await bcrypt.compare(candidatePassword, userPassword);
+};
+
+userSchema.methods.changedPasswordAfter = function (JWTTimestamp) {
+  if (this.passwordChangedAt) {
+    const changedTimestamp = parseInt(
+      this.passwordChangedAt.getTime() / 1000,
+      10,
+    );
+    return JWTTimestamp < changedTimestamp;
+  }
+
+  return false;
+};
+
+userSchema.methods.createPasswordResetToken = function () {
+  const resetToken = crypto.randomBytes(32).toString("hex");
+
+  this.passwordResetToken = crypto
+    .createHash("sha256")
+    .update(resetToken)
+    .digest("hex");
+
+  this.passwordResetExpires = Date.now() + 10 * 60 * 1000;
+
+  return resetToken;
+};
+
+const User = mongoose.model("User", userSchema);
+
+export default User;
+</file>
+
+<file path="backend/app.js">
+import express from "express";
+import rateLimit from "express-rate-limit";
+import helmet from "helmet";
+import cors from "cors";
+import morgan from "morgan";
+
+import AppError from "./utils/appError.js";
+import userRouter from "./routes/userRoutes.js";
+import productRouter from "./routes/productRoutes.js";
+import orderRouter from "./routes/orderRoutes.js";
+import globalErrorHandler from "./controllers/errorController.js";
+
+const limiter = rateLimit({
+  windowMs: 60 * 60 * 1000,
+  limit: process.env.NODE_ENV === "development" ? 10000 : 100,
+  message: "Too many requests from this IP, please try again in an hour!",
+  standardHeaders: "draft-7",
+  legacyHeaders: false,
+});
+
+const app = express();
+
+app.use(cors({ origin: "http://localhost:5173", credentials: true }));
+
+if (process.env.NODE_ENV === "development") {
+  app.use(morgan("dev"));
+}
+
+app.use(helmet());
+app.use("/api", limiter);
+
+app.use(express.json({ limit: "10kb" }));
+
+app.use("/api/v1/users", userRouter);
+
+app.use("/api/v1/products", productRouter);
+
+app.use("/api/v1/orders", orderRouter);
+
+// this point is reached if none of the routes above were matched. matches every HTTP method and route.
+app.use((req, res, next) => {
+  // this AppError object ends up in the error handler middleware, which has 4 parameters.
+  next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
+});
+
+app.use(globalErrorHandler);
+
+export default app;
+</file>
+
+<file path="backend/package.json">
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "cors": "^2.8.6",
+    "dotenv": "^18.0.6",
+    "express": "^5.2.1",
+    "express-rate-limit": "^8.7.1",
+    "helmet": "^8.3.0",
+    "jsonwebtoken": "^9.0.3",
+    "mongoose": "^9.11.1",
+    "validator": "^13.15.35"
+  },
+  "devDependencies": {
+    "morgan": "^1.12.1"
+  }
+}
+</file>
+
+<file path="backend/routes/userRoutes.js">
+import express from "express";
+import {
+  forgotPassword,
+  login,
+  protect,
+  resetPassword,
+  restrictTo,
+  signup,
+  updatePassword,
+} from "../controllers/authController.js";
+
+import {
+  deleteMe,
+  deleteUser,
+  getAllUsers,
+  getMe,
+  getUser,
+  updateMe,
+  updateUser,
+} from "../controllers/userController.js";
+
+const router = express.Router();
+
+router.route("/signup").post(signup);
+
+router.route("/login").post(login);
+
+router.route("/forgotPassword").post(forgotPassword);
+
+router.route("/resetPassword/:token").patch(resetPassword);
+
+router.route("/updatePassword").patch(protect, updatePassword);
+
+router.route("/updateMe").patch(protect, updateMe);
+
+router.route("/deleteMe").patch(protect, deleteMe);
+router.route("/me").get(protect, getMe, getUser);
+
+router.route("/").get(protect, restrictTo("admin"), getAllUsers);
+
+router
+  .route("/:id")
+  .get(protect, restrictTo("admin"), getUser)
+  .patch(protect, restrictTo("admin"), updateUser)
+  .delete(protect, restrictTo("admin"), deleteUser);
+
+export default router;
+</file>
+
+</files>

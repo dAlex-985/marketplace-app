@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 import User from "./models/userModel.js";
 import Product from "./models/productModel.js";
+import Order from "./models/orderModel.js";
 
 dotenv.config();
 
@@ -34,6 +35,7 @@ async function seedDatabase() {
     await mongoose.connect(process.env.DB);
     console.log("Connected to MongoDB...");
 
+    await Order.deleteMany();
     await Product.deleteMany();
     await User.deleteMany();
 
@@ -62,6 +64,7 @@ async function seedDatabase() {
         category: "women",
         images: ["/images/emerald-knit-sweater.jpg"],
         seller: petra._id,
+        status: "sold",
       },
       {
         title: "Vintage Medium-Wash Denim Jacket",
@@ -139,6 +142,7 @@ async function seedDatabase() {
         category: "other",
         images: ["/images/ceramic-coffee-mug.jpg"],
         seller: mark._id,
+        status: "sold",
       },
       {
         title: "Minimalist Olive Canvas Daypack",
@@ -150,11 +154,38 @@ async function seedDatabase() {
         category: "other",
         images: ["/images/canvas-backpack.jpg"],
         seller: anna._id,
+        status: "sold",
       },
     ];
 
-    await Product.create(products);
-    console.log("Seed completed: 3 users and 10 products created!");
+    const createdProducts = await Product.create(products);
+
+    const orders = [
+      {
+        product: createdProducts[1]._id,
+        buyer: anna._id,
+        seller: petra._id,
+        price: createdProducts[1].price,
+        status: "completed",
+      },
+      {
+        product: createdProducts[8]._id,
+        buyer: anna._id,
+        seller: mark._id,
+        price: createdProducts[8].price,
+        status: "pending",
+      },
+      {
+        product: createdProducts[9]._id,
+        buyer: mark._id,
+        seller: anna._id,
+        price: createdProducts[9].price,
+        status: "completed",
+      },
+    ];
+
+    await Order.create(orders);
+    console.log("Seed completed: 3 users, 10 products, and 3 orders created!");
   } catch (err) {
     console.error("Seed failed:", err);
   } finally {
